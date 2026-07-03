@@ -1,0 +1,113 @@
+{% comment %} FBC advice teaser — brief §4.7: 3 cards → buying guide + 2 articles {% endcomment %}
+{{ 'fbc-home.css' | asset_url | stylesheet_tag }}
+
+<section class="fbc-section page-width">
+  <header class="fbc-section-header">
+    {%- if section.settings.eyebrow != blank -%}<span class="fbc-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+    <h2>{{ section.settings.heading }}</h2>
+    {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+  </header>
+
+  <ul class="fbc-advice" role="list">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign card_url = block.settings.link
+        assign card_title = block.settings.heading
+        assign card_text = block.settings.text
+        assign card_image = block.settings.image
+        assign card_kicker = block.settings.kicker
+
+        if block.type == 'article' and block.settings.article != blank
+          assign art = block.settings.article
+          assign card_url = art.url
+          if card_title == blank
+            assign card_title = art.title
+          endif
+          if card_text == blank
+            assign card_text = art.excerpt_or_content | strip_html | truncate: 120
+          endif
+          if card_image == blank
+            assign card_image = art.image
+          endif
+          if card_kicker == blank
+            assign card_kicker = 'Advice & Guides'
+          endif
+        endif
+      -%}
+      <li class="fbc-advice__item" {{ block.shopify_attributes }}>
+        <a class="fbc-advice__card fbc-surface" href="{{ card_url }}">
+          <span class="fbc-advice__media">
+            {%- if card_image != blank -%}
+              {{
+                card_image
+                | image_url: width: 900
+                | image_tag:
+                  widths: '360, 540, 720, 900',
+                  sizes: '(min-width: 990px) 33vw, 100vw',
+                  loading: 'lazy',
+                  class: 'fbc-advice__image',
+                  alt: card_title
+              }}
+            {%- else -%}
+              <span class="fbc-advice__image fbc-advice__image--placeholder"></span>
+            {%- endif -%}
+          </span>
+          <span class="fbc-advice__body">
+            {%- if card_kicker != blank -%}<span class="fbc-eyebrow">{{ card_kicker }}</span>{%- endif -%}
+            <h3 class="fbc-advice__title">{{ card_title }}</h3>
+            {%- if card_text != blank -%}<p class="fbc-advice__text">{{ card_text }}</p>{%- endif -%}
+            <span class="fbc-advice__more">Read more {% render 'fbc-icon', icon: 'arrow', class: 'fbc-icon fbc-advice__arrow' %}</span>
+          </span>
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Advice teaser",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Advice & guides" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Choose With Confidence" },
+    { "type": "textarea", "id": "text", "label": "Intro text", "default": "Honest, practical guidance from people who spend all day with baths." }
+  ],
+  "blocks": [
+    {
+      "type": "custom",
+      "name": "Custom card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "kicker", "label": "Kicker", "default": "Buying guide" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "How to choose a freestanding bath" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Sizes, materials, styles and the practical bits — everything you need to pick the right bath first time." },
+        { "type": "url", "id": "link", "label": "Link", "default": "/pages/buying-guide" }
+      ]
+    },
+    {
+      "type": "article",
+      "name": "Blog article",
+      "settings": [
+        { "type": "article", "id": "article", "label": "Article" },
+        { "type": "image_picker", "id": "image", "label": "Image override" },
+        { "type": "text", "id": "kicker", "label": "Kicker override" },
+        { "type": "text", "id": "heading", "label": "Heading override" },
+        { "type": "textarea", "id": "text", "label": "Text override" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Advice teaser",
+      "blocks": [
+        { "type": "custom" },
+        { "type": "article" },
+        { "type": "article" }
+      ]
+    }
+  ]
+}
+{% endschema %}

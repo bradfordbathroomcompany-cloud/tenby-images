@@ -1,0 +1,19 @@
+{% comment %}
+  Emits :root overrides from the merchant's brand-colour settings so the
+  boutique palette is editable in Theme settings → Freestanding Bath Co.
+  Included once in <head>. Only writes variables that have a value.
+{% endcomment %}
+{% style %}
+  :root {
+    {%- if settings.fbc_c_ink != blank %}--c-ink: {{ settings.fbc_c_ink }};{% endif %}
+    {%- if settings.fbc_c_cream != blank %}--c-cream: {{ settings.fbc_c_cream }};{% endif %}
+    {%- if settings.fbc_c_paper != blank %}--c-paper: {{ settings.fbc_c_paper }};{% endif %}
+    {%- if settings.fbc_c_brass != blank %}--c-brass: {{ settings.fbc_c_brass }};{% endif %}
+    {%- if settings.fbc_c_brass_dark != blank %}--c-brass-dark: {{ settings.fbc_c_brass_dark }};{% endif %}
+    {%- if settings.fbc_c_sage != blank %}--c-sage: {{ settings.fbc_c_sage }};{% endif %}
+    {%- if settings.fbc_c_ink != blank %}--color-foreground: {{ settings.fbc_c_ink.red }}, {{ settings.fbc_c_ink.green }}, {{ settings.fbc_c_ink.blue }};{% endif %}
+    {%- if settings.fbc_c_cream != blank %}--color-background: {{ settings.fbc_c_cream.red }}, {{ settings.fbc_c_cream.green }}, {{ settings.fbc_c_cream.blue }};{% endif %}
+    {%- if settings.fbc_c_brass != blank %}--color-button: {{ settings.fbc_c_brass.red }}, {{ settings.fbc_c_brass.green }}, {{ settings.fbc_c_brass.blue }};{% endif %}
+    {%- if settings.fbc_c_brass_dark != blank %}--color-link: {{ settings.fbc_c_brass_dark.red }}, {{ settings.fbc_c_brass_dark.green }}, {{ settings.fbc_c_brass_dark.blue }};{% endif %}
+  }
+{% endstyle %}

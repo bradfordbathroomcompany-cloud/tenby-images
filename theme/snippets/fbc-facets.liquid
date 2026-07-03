@@ -1,0 +1,87 @@
+{% comment %}
+  Native Storefront filtering (collection.filters) — brief §5.
+  Renders as a form; progressively enhanced by fbc-facets.js (instant apply +
+  mobile drawer). Works without JS (submit button). Owner enables metafield
+  filters (material, size_mm, style, colour, brand) in Search & Discovery.
+{% endcomment %}
+
+{%- liquid
+  assign results = collection
+  if search.filters
+    assign results = search
+  endif
+-%}
+
+<facet-filters class="fbc-facets" data-results-count="{{ results.products_count }}">
+  <form class="fbc-facets__form" data-facet-form>
+    {%- comment -%} Preserve current sort so filtering doesn't reset it {%- endcomment -%}
+    {%- if results.sort_by != blank -%}
+      <input type="hidden" name="sort_by" value="{{ results.sort_by }}">
+    {%- endif -%}
+    {%- if results.terms -%}
+      <input type="hidden" name="q" value="{{ results.terms | escape }}">
+      <input type="hidden" name="options[prefix]" value="last">
+    {%- endif -%}
+
+    <div class="fbc-facets__head">
+      <h2 class="fbc-facets__title">Filter</h2>
+      <button type="button" class="fbc-facets__close" data-facet-close aria-label="Close filters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" class="fbc-icon"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    {%- for filter in results.filters -%}
+      {%- case filter.type -%}
+        {%- when 'list', 'boolean' -%}
+          <details class="fbc-facet" open>
+            <summary class="fbc-facet__summary">
+              {{ filter.label }}
+              {%- assign active = 0 -%}
+              {%- for v in filter.active_values -%}{%- assign active = active | plus: 1 -%}{%- endfor -%}
+              {%- if active > 0 -%}<span class="fbc-facet__count">{{ active }}</span>{%- endif -%}
+              <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <ul class="fbc-facet__list" role="list">
+              {%- for value in filter.values -%}
+                <li>
+                  <label class="fbc-facet__option{% if value.count == 0 and value.active == false %} fbc-facet__option--disabled{% endif %}">
+                    <input
+                      type="checkbox"
+                      name="{{ value.param_name }}"
+                      value="{{ value.value }}"
+                      {% if value.active %}checked{% endif %}
+                      {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                    >
+                    <span class="fbc-facet__option-label">{{ value.label }}</span>
+                    <span class="fbc-facet__option-count">{{ value.count }}</span>
+                  </label>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </details>
+        {%- when 'price_range' -%}
+          <details class="fbc-facet" open>
+            <summary class="fbc-facet__summary">
+              {{ filter.label }}
+              <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="fbc-facet__price">
+              <label>
+                <span>From</span>
+                <input type="number" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value }}" placeholder="{{ 0 | money_without_currency }}" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" inputmode="decimal">
+              </label>
+              <label>
+                <span>To</span>
+                <input type="number" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value }}" placeholder="{{ filter.range_max | money_without_currency }}" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" inputmode="decimal">
+              </label>
+            </div>
+          </details>
+      {%- endcase -%}
+    {%- endfor -%}
+
+    <div class="fbc-facets__actions">
+      <button type="submit" class="button button--primary fbc-facets__apply">Show results</button>
+      <a href="{{ results.url | default: collection.url }}" class="fbc-facets__clear" data-facet-clear>Clear all</a>
+    </div>
+  </form>
+</facet-filters>

@@ -1,0 +1,38 @@
+{% comment %}
+  Delivery promise box — brief §7.
+  Shows the free-delivery promise on every product; adds the next-day
+  upgrade line when custom.nextday_eligible is true (or tag nextday-eligible).
+{% endcomment %}
+
+{%- liquid
+  assign nextday = false
+  if product.metafields.custom.nextday_eligible.value == true or product.tags contains 'nextday-eligible'
+    assign nextday = true
+  endif
+  assign cutoff_text = settings.fbc_nextday_cutoff | default: 'order by 12pm Mon–Thu'
+-%}
+
+<div class="fbc-delivery-box" aria-label="Delivery information">
+  <p class="fbc-delivery-box__line fbc-delivery-box__line--free">
+    {% render 'fbc-icon', icon: 'check', class: 'fbc-icon' %}
+    <span><strong>Free UK delivery</strong>, 3–5 working days</span>
+  </p>
+  {%- if nextday -%}
+    <p class="fbc-delivery-box__line fbc-delivery-box__line--nextday">
+      {% render 'fbc-icon', icon: 'bolt', class: 'fbc-icon' %}
+      <span><strong>Next-working-day upgrade</strong> available at checkout — {{ cutoff_text }}</span>
+    </p>
+  {%- endif -%}
+  {%- if product.metafields.custom.guarantee.value != blank -%}
+    <p class="fbc-delivery-box__line fbc-delivery-box__line--guarantee">
+      {% render 'fbc-icon', icon: 'shield', class: 'fbc-icon' %}
+      <span><strong>{{ product.metafields.custom.guarantee.value }}</strong> manufacturer's guarantee</span>
+    </p>
+  {%- endif -%}
+  {%- if product.metafields.custom.feet_included.value == true -%}
+    <p class="fbc-delivery-box__line">
+      {% render 'fbc-icon', icon: 'check', class: 'fbc-icon' %}
+      <span><strong>Feet included</strong> — nothing extra to buy</span>
+    </p>
+  {%- endif -%}
+</div>

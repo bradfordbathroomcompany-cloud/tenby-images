@@ -1,0 +1,57 @@
+{% comment %}
+  "Will it fit?" expandable panel — brief §7.
+  Requires: product with custom.size_mm metafield. Renders nothing without it.
+{% endcomment %}
+
+{%- liquid
+  assign bath_length = product.metafields.custom.size_mm.value
+-%}
+
+{%- if bath_length -%}
+  <script src="{{ 'fbc-will-it-fit.js' | asset_url }}" defer="defer"></script>
+
+  <details class="fbc-fit">
+    <summary class="fbc-fit__summary">
+      <span class="fbc-fit__summary-label">
+        {% render 'fbc-icon', icon: 'ruler', class: 'fbc-icon' %}
+        Will it fit? Check your space
+      </span>
+      <span class="fbc-fit__chevron" aria-hidden="true"></span>
+    </summary>
+
+    <fbc-will-it-fit class="fbc-fit__body" data-bath-length="{{ bath_length }}">
+      <svg class="fbc-fit__plan" viewBox="0 0 400 150" role="img" aria-label="Plan view: this bath is {{ bath_length }}mm long; allow 100mm clearance each side.">
+        <rect data-fit-room x="40" y="18" width="320" height="114" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.45" rx="2"/>
+        <rect x="80" y="45" width="240" height="60" rx="26" fill="none" stroke="currentColor" stroke-width="2"/>
+        <rect x="92" y="53" width="216" height="44" rx="20" fill="currentColor" opacity="0.08"/>
+        <line x1="80" y1="122" x2="320" y2="122" stroke="currentColor" stroke-width="1"/>
+        <line x1="80" y1="117" x2="80" y2="127" stroke="currentColor" stroke-width="1"/>
+        <line x1="320" y1="117" x2="320" y2="127" stroke="currentColor" stroke-width="1"/>
+        <text x="200" y="140" text-anchor="middle" font-size="11" fill="currentColor">{{ bath_length }}mm</text>
+        <text data-fit-room-label x="200" y="12" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.6">Your wall</text>
+      </svg>
+
+      <p class="fbc-fit__guidance">
+        This bath is <strong>{{ bath_length }}mm</strong> long. We suggest allowing
+        <strong>100mm clearance each side</strong> so it reads as a true freestanding piece
+        (and the room is easy to clean).
+      </p>
+
+      <div class="fbc-fit__check">
+        <label class="fbc-fit__label" for="FitRoomWidth-{{ product.id }}">Length of your wall or alcove (mm)</label>
+        <input
+          class="fbc-fit__input"
+          id="FitRoomWidth-{{ product.id }}"
+          data-fit-input
+          type="number"
+          inputmode="numeric"
+          min="300"
+          max="20000"
+          step="10"
+          placeholder="e.g. 2200"
+        >
+      </div>
+      <p class="fbc-fit__result" data-fit-result role="status" aria-live="polite"></p>
+    </fbc-will-it-fit>
+  </details>
+{%- endif -%}

@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "fbc-404",
+      "blocks": {
+        "l1": { "type": "link", "settings": { "collection": "all-freestanding-baths" } },
+        "l2": { "type": "link", "settings": { "collection": "roll-top-baths" } },
+        "l3": { "type": "link", "settings": { "collection": "sale-clearance" } }
+      },
+      "block_order": ["l1", "l2", "l3"]
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,80 @@
+{% comment %}
+  Cart delivery messaging + accessory cross-sell — brief §8.
+  Rendered inside the cart drawer and the cart page footer.
+  Pass: context ('drawer' | 'page')
+{% endcomment %}
+
+{%- liquid
+  assign ctx = context | default: 'drawer'
+  assign total_lines = cart.items.size
+  assign eligible = 0
+  assign bath_in_cart = false
+  assign waste_in_cart = false
+
+  for item in cart.items
+    if item.product.metafields.custom.nextday_eligible.value == true or item.product.tags contains 'nextday-eligible'
+      assign eligible = eligible | plus: 1
+    endif
+    if item.product.metafields.custom.bath_type.value or item.product.metafields.custom.size_mm.value
+      assign bath_in_cart = true
+    endif
+    for col in item.product.collections
+      if col.handle == 'bath-wastes-fillers'
+        assign waste_in_cart = true
+      endif
+    endfor
+  endfor
+-%}
+
+{%- if cart.item_count > 0 -%}
+  <div class="fbc-cart-msg fbc-cart-msg--{{ ctx }}">
+    <p class="fbc-cart-msg__line fbc-cart-msg__line--free">
+      {% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %}
+      <span><strong>Free UK delivery</strong> — 3–5 working days</span>
+    </p>
+    {%- if eligible == total_lines and total_lines > 0 -%}
+      <p class="fbc-cart-msg__line fbc-cart-msg__line--nextday">
+        {% render 'fbc-icon', icon: 'bolt', class: 'fbc-icon' %}
+        <span><strong>Your order qualifies for a next-day upgrade</strong> — choose it at checkout.</span>
+      </p>
+    {%- elsif eligible > 0 -%}
+      <p class="fbc-cart-msg__line">
+        {% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %}
+        <span>Some items are made to order — your order ships together, free, in 3–5 working days.</span>
+      </p>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Accessory cross-sell: a bath without a waste {%- endcomment -%}
+  {%- if bath_in_cart and waste_in_cart == false -%}
+    {%- assign waste_col = collections['bath-wastes-fillers'] -%}
+    {%- for waste in waste_col.products limit: 1 -%}
+      {%- if waste.available -%}
+        <div class="fbc-cart-addon">
+          <p class="fbc-cart-addon__label">Don't forget a waste &amp; filler</p>
+          <div class="fbc-cart-addon__row">
+            <a class="fbc-cart-addon__media" href="{{ waste.url }}">
+              {%- if waste.featured_media -%}
+                {{ waste.featured_media | image_url: width: 120 | image_tag: widths: '60, 120', loading: 'lazy', alt: waste.title | escape, class: 'fbc-cart-addon__img' }}
+              {%- endif -%}
+            </a>
+            <div class="fbc-cart-addon__info">
+              <a href="{{ waste.url }}" class="fbc-cart-addon__title">{{ waste.title }}</a>
+              <span class="fbc-cart-addon__price">{{ waste.price | money }}</span>
+            </div>
+            {%- if waste.variants.size == 1 -%}
+              <product-form data-section-id="fbc-cart-addon">
+                {%- form 'product', waste, class: 'fbc-cart-addon__form' -%}
+                  <input type="hidden" name="id" value="{{ waste.selected_or_first_available_variant.id }}">
+                  <button type="submit" name="add" class="button button--secondary fbc-cart-addon__add" aria-label="Add {{ waste.title | escape }}">Add</button>
+                {%- endform -%}
+              </product-form>
+            {%- else -%}
+              <a href="{{ waste.url }}" class="button button--secondary fbc-cart-addon__add">View</a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endif -%}

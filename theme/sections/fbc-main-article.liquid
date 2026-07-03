@@ -1,0 +1,84 @@
+{% comment %} FBC article — editorial, drop cap, related, in-article product — brief §9 {% endcomment %}
+{{ 'fbc-pages.css' | asset_url | stylesheet_tag }}
+
+{% render 'fbc-breadcrumbs' %}
+
+<article class="fbc-article">
+  <header class="fbc-article__head page-width">
+    <p class="fbc-article__meta">{{ article.published_at | date: '%-d %B %Y' }}{% if article.author != blank %} · {{ article.author }}{% endif %}</p>
+    <h1 class="fbc-article__title">{{ article.title }}</h1>
+  </header>
+
+  {%- if article.image -%}
+    <div class="fbc-article__hero page-width">
+      {{ article.image | image_url: width: 1600 | image_tag: widths: '600, 900, 1200, 1600', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: article.title | escape }}
+    </div>
+  {%- endif -%}
+
+  <div class="page-width fbc-prose">
+    <div class="fbc-article__body rte{% if section.settings.drop_cap %} fbc-dropcap{% endif %}">
+      {{ article.content }}
+    </div>
+
+    {%- if section.settings.featured_product != blank -%}
+      {%- assign fp = section.settings.featured_product -%}
+      <a class="fbc-inline-product" href="{{ fp.url }}">
+        {%- if fp.featured_media -%}{{ fp.featured_media | image_url: width: 240 | image_tag: loading: 'lazy', alt: fp.title | escape }}{%- endif -%}
+        <span>
+          <span class="fbc-eyebrow">Featured in this guide</span>
+          <span class="fbc-inline-product__title">{{ fp.title }}</span>
+          <span class="fbc-price" style="display:block;margin-top:0.4rem">{{ fp.price | money }}</span>
+          <span class="fbc-delivery-line" style="margin-top:0.4rem">{% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %} Free delivery, 3–5 working days</span>
+        </span>
+      </a>
+    {%- endif -%}
+
+    {%- if blog.comments_enabled? -%}
+      <div style="margin-top:var(--space-5)">{% comment %} comments intentionally minimal {% endcomment %}</div>
+    {%- endif -%}
+  </div>
+
+  {%- assign related = blog.articles | where: 'id' -%}
+  {%- if blog.articles.size > 1 -%}
+    <div class="page-width fbc-article__related">
+      <h2 class="fbc-section-header--left" style="margin-bottom:var(--space-3)">More from {{ blog.title }}</h2>
+      <div class="fbc-blog__grid">
+        {%- assign shown = 0 -%}
+        {%- for a in blog.articles -%}
+          {%- if a.id != article.id and shown < 3 -%}
+            <a class="fbc-article-card" href="{{ a.url }}">
+              <span class="fbc-article-card__media">{% if a.image %}{{ a.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: a.title | escape }}{% endif %}</span>
+              <span class="fbc-article-card__meta">{{ a.published_at | date: '%-d %B %Y' }}</span>
+              <span class="fbc-article-card__title">{{ a.title }}</span>
+            </a>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</article>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": {{ article.title | json }},
+    "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+    {% if article.image %}"image": {{ article.image | image_url: width: 1200 | prepend: 'https:' | json }},{% endif %}
+    "author": { "@type": "Organization", "name": {{ article.author | default: shop.name | json }} },
+    "publisher": { "@type": "Organization", "name": {{ shop.name | json }} },
+    "mainEntityOfPage": {{ request.origin | append: article.url | json }}
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Article",
+  "tag": "section",
+  "settings": [
+    { "type": "checkbox", "id": "drop_cap", "label": "Drop cap on first paragraph", "default": true },
+    { "type": "product", "id": "featured_product", "label": "In-article featured product" }
+  ]
+}
+{% endschema %}

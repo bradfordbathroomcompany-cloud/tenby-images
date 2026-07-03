@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "fbc-main-product",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

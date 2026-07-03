@@ -1,0 +1,281 @@
+{% comment %}
+  FBC sticky header — brief §3.
+  Logo left (image or Fraunces logotype + microline), nav centre, search + account + cart right.
+  "Baths"-style items (whose children have children) open a full-width mega panel:
+  child groups as columns + featured tile; childless children become emphasised bottom links.
+  Other top-level items with children render as simple dropdowns.
+{% endcomment %}
+{{ 'fbc-header.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'fbc-header.js' | asset_url }}" defer="defer"></script>
+
+{%- assign menu = section.settings.menu | default: linklists.main-menu -%}
+
+<fbc-header class="fbc-header-wrap{% if section.settings.sticky %} fbc-header-wrap--sticky{% endif %}">
+  <header class="fbc-header page-width">
+    {%- comment -%} Mobile drawer toggle {%- endcomment -%}
+    <button
+      type="button"
+      class="fbc-header__icon-btn fbc-header__burger"
+      data-drawer-open
+      aria-expanded="false"
+      aria-controls="FbcMobileDrawer"
+      aria-label="Open menu"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false" class="fbc-icon"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+
+    {%- comment -%} Logo {%- endcomment -%}
+    <div class="fbc-header__logo">
+      <a href="{{ routes.root_url }}" class="fbc-header__logo-link">
+        {%- if settings.logo != blank -%}
+          {{
+            settings.logo
+            | image_url: width: 440
+            | image_tag:
+              widths: '220, 440',
+              sizes: '220px',
+              class: 'fbc-header__logo-image',
+              alt: shop.name
+          }}
+        {%- else -%}
+          <span class="fbc-header__logotype">{{ section.settings.logotype | default: shop.name }}</span>
+          {%- if section.settings.microline != blank -%}
+            <span class="fbc-header__microline">{{ section.settings.microline }}</span>
+          {%- endif -%}
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- comment -%} Desktop nav {%- endcomment -%}
+    <nav class="fbc-header__nav" aria-label="Main menu">
+      <ul class="fbc-header__menu" role="list">
+        {%- for link in menu.links -%}
+          {%- liquid
+            assign has_mega = false
+            for child in link.links
+              if child.links.size > 0
+                assign has_mega = true
+              endif
+            endfor
+          -%}
+          {%- if has_mega -%}
+            <li class="fbc-header__item">
+              <details class="fbc-nav-details fbc-nav-details--mega" data-nav-item>
+                <summary class="fbc-header__link" aria-expanded="false">
+                  {{ link.title }}
+                  <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </summary>
+                <div class="fbc-mega">
+                  <div class="page-width fbc-mega__grid">
+                    <div class="fbc-mega__columns">
+                      {%- assign flat_children = '' -%}
+                      {%- for child in link.links -%}
+                        {%- if child.links.size > 0 -%}
+                          <div class="fbc-mega__col">
+                            <p class="fbc-mega__col-title"><a href="{{ child.url }}">{{ child.title }}</a></p>
+                            <ul class="fbc-mega__col-list" role="list">
+                              {%- for grandchild in child.links -%}
+                                <li><a class="fbc-mega__link" href="{{ grandchild.url }}">{{ grandchild.title }}</a></li>
+                              {%- endfor -%}
+                            </ul>
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+
+                    {%- if section.settings.mega_image != blank or section.settings.mega_heading != blank -%}
+                      <a class="fbc-mega__feature" href="{{ section.settings.mega_link }}">
+                        {%- if section.settings.mega_image != blank -%}
+                          {{
+                            section.settings.mega_image
+                            | image_url: width: 720
+                            | image_tag:
+                              widths: '360, 540, 720',
+                              sizes: '320px',
+                              loading: 'lazy',
+                              class: 'fbc-mega__feature-image',
+                              alt: section.settings.mega_heading
+                          }}
+                        {%- endif -%}
+                        <span class="fbc-mega__feature-copy">
+                          <span class="fbc-mega__feature-heading">{{ section.settings.mega_heading }}</span>
+                          {%- if section.settings.mega_text != blank -%}
+                            <span class="fbc-mega__feature-text">{{ section.settings.mega_text }}</span>
+                          {%- endif -%}
+                        </span>
+                      </a>
+                    {%- endif -%}
+                  </div>
+
+                  {%- capture mega_footer -%}
+                    {%- for child in link.links -%}
+                      {%- if child.links.size == 0 -%}
+                        <a class="fbc-mega__footer-link" href="{{ child.url }}">{{ child.title }} {% render 'fbc-icon', icon: 'arrow', class: 'fbc-icon fbc-mega__footer-arrow' %}</a>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+                  {%- if mega_footer contains 'href' -%}
+                    <div class="fbc-mega__footer">
+                      <div class="page-width fbc-mega__footer-inner">{{ mega_footer }}</div>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </details>
+            </li>
+          {%- elsif link.links.size > 0 -%}
+            <li class="fbc-header__item">
+              <details class="fbc-nav-details fbc-nav-details--dropdown" data-nav-item>
+                <summary class="fbc-header__link" aria-expanded="false">
+                  {{ link.title }}
+                  <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </summary>
+                <ul class="fbc-dropdown" role="list">
+                  {%- for child in link.links -%}
+                    <li><a class="fbc-dropdown__link" href="{{ child.url }}">{{ child.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            </li>
+          {%- else -%}
+            <li class="fbc-header__item">
+              <a class="fbc-header__link{% if link.url == '/collections/sale-clearance' %} fbc-header__link--sale{% endif %}" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title }}</a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    {%- comment -%} Right cluster: search / account / cart {%- endcomment -%}
+    <div class="fbc-header__actions">
+      <button
+        type="button"
+        class="fbc-header__icon-btn"
+        data-search-open
+        aria-expanded="false"
+        aria-controls="FbcSearchPanel"
+        aria-label="Search"
+      >
+        {% render 'fbc-icon', icon: 'search', class: 'fbc-icon' %}
+      </button>
+
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="fbc-header__icon-btn fbc-header__account" aria-label="Account" rel="nofollow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false" class="fbc-icon"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5"/></svg>
+        </a>
+      {%- endif -%}
+
+      <a href="{{ routes.cart_url }}" class="fbc-header__icon-btn fbc-header__cart" data-cart-open aria-label="Basket ({{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="fbc-icon"><path d="M5 8h14l-1.2 11a1.8 1.8 0 0 1-1.8 1.5H8a1.8 1.8 0 0 1-1.8-1.5L5 8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg>
+        <span class="fbc-header__cart-count{% if cart.item_count == 0 %} is-empty{% endif %}" data-cart-count aria-hidden="true">{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </header>
+
+  {%- comment -%} Search panel {%- endcomment -%}
+  <div class="fbc-search-panel" id="FbcSearchPanel" hidden>
+    <fbc-predictive-search class="page-width fbc-search-panel__inner" data-shop-currency="{{ cart.currency.symbol }}">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="fbc-search-panel__form">
+        <label class="fbc-visually-hidden" for="FbcSearchInput">Search our baths, taps and guides</label>
+        {% render 'fbc-icon', icon: 'search', class: 'fbc-icon fbc-search-panel__icon' %}
+        <input
+          id="FbcSearchInput"
+          class="fbc-search-panel__input"
+          type="search"
+          name="q"
+          placeholder="Search baths, taps, guides…"
+          autocomplete="off"
+          autocorrect="off"
+          data-search-input
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="FbcSearchResults"
+          aria-autocomplete="list"
+        >
+        <input type="hidden" name="options[prefix]" value="last">
+        <button type="button" class="fbc-header__icon-btn" data-search-close aria-label="Close search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false" class="fbc-icon"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </form>
+      <div class="fbc-search-panel__results" id="FbcSearchResults" data-search-results role="listbox" aria-label="Search suggestions"></div>
+    </fbc-predictive-search>
+  </div>
+
+  {%- comment -%} Mobile drawer {%- endcomment -%}
+  <div class="fbc-drawer" id="FbcMobileDrawer" hidden>
+    <div class="fbc-drawer__scrim" data-drawer-close></div>
+    <div class="fbc-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="fbc-drawer__head">
+        <span class="fbc-header__logotype fbc-drawer__logotype">{{ section.settings.logotype | default: shop.name }}</span>
+        <button type="button" class="fbc-header__icon-btn" data-drawer-close aria-label="Close menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false" class="fbc-icon"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <nav class="fbc-drawer__nav" aria-label="Mobile menu">
+        <ul class="fbc-drawer__menu" role="list">
+          {%- for link in menu.links -%}
+            {%- if link.links.size > 0 -%}
+              <li>
+                <details class="fbc-drawer__group">
+                  <summary class="fbc-drawer__link" aria-expanded="false">
+                    {{ link.title }}
+                    <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </summary>
+                  <ul class="fbc-drawer__submenu" role="list">
+                    {%- for child in link.links -%}
+                      {%- if child.links.size > 0 -%}
+                        <li>
+                          <details class="fbc-drawer__group fbc-drawer__group--nested">
+                            <summary class="fbc-drawer__link fbc-drawer__link--child" aria-expanded="false">
+                              {{ child.title }}
+                              <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </summary>
+                            <ul class="fbc-drawer__submenu fbc-drawer__submenu--nested" role="list">
+                              {%- for grandchild in child.links -%}
+                                <li><a class="fbc-drawer__link fbc-drawer__link--grandchild" href="{{ grandchild.url }}">{{ grandchild.title }}</a></li>
+                              {%- endfor -%}
+                            </ul>
+                          </details>
+                        </li>
+                      {%- else -%}
+                        <li><a class="fbc-drawer__link fbc-drawer__link--child" href="{{ child.url }}">{{ child.title }}</a></li>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </ul>
+                </details>
+              </li>
+            {%- else -%}
+              <li><a class="fbc-drawer__link{% if link.url == '/collections/sale-clearance' %} fbc-header__link--sale{% endif %}" href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </nav>
+
+      <div class="fbc-drawer__trust">
+        <p>{% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %} Free UK delivery, 3–5 working days</p>
+        <p>{% render 'fbc-icon', icon: 'bolt', class: 'fbc-icon' %} Next-day upgrade on eligible baths</p>
+        <p>{% render 'fbc-icon', icon: 'card', class: 'fbc-icon' %} Finance available</p>
+        <p>{% render 'fbc-icon', icon: 'chat', class: 'fbc-icon' %} Expert advice — <a href="/pages/contact">talk to us</a></p>
+      </div>
+    </div>
+  </div>
+</fbc-header>
+
+{% schema %}
+{
+  "name": "Header",
+  "tag": "header",
+  "class": "fbc-header-section",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "checkbox", "id": "sticky", "label": "Sticky header", "default": true },
+    { "type": "text", "id": "logotype", "label": "Text logotype", "default": "Freestanding Bath Co", "info": "Used until a logo image is uploaded in Theme settings → Logo." },
+    { "type": "text", "id": "microline", "label": "Logotype microline", "default": "Est. specialists in statement baths" },
+    { "type": "header", "content": "Mega menu featured tile" },
+    { "type": "image_picker", "id": "mega_image", "label": "Image" },
+    { "type": "text", "id": "mega_heading", "label": "Heading", "default": "The Copper Edit" },
+    { "type": "text", "id": "mega_text", "label": "Text", "default": "Warm metal, serious presence." },
+    { "type": "url", "id": "mega_link", "label": "Link", "default": "/collections/copper-baths" }
+  ]
+}
+{% endschema %}

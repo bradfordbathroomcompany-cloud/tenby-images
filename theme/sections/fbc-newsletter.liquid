@@ -1,0 +1,71 @@
+{% comment %} FBC newsletter band — brief §4.9 "Good Taste, Delivered." {% endcomment %}
+{{ 'fbc-home.css' | asset_url | stylesheet_tag }}
+
+<section class="fbc-newsletter fbc-inverse">
+  <div class="page-width fbc-newsletter__inner">
+    <div class="fbc-newsletter__copy">
+      <h2 class="fbc-newsletter__heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<p class="fbc-newsletter__text">{{ section.settings.text }}</p>{%- endif -%}
+    </div>
+
+    {%- form 'customer', class: 'fbc-newsletter__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="fbc-newsletter__field">
+        <label class="fbc-visually-hidden" for="FbcNewsletterEmail-{{ section.id }}">Email address</label>
+        <input
+          id="FbcNewsletterEmail-{{ section.id }}"
+          type="email"
+          name="contact[email]"
+          class="fbc-newsletter__input"
+          value="{{ form.email }}"
+          aria-required="true"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          {% if form.errors %}
+            autofocus
+            aria-invalid="true"
+            aria-describedby="FbcNewsletterError-{{ section.id }}"
+          {% elsif form.posted_successfully? %}
+            aria-describedby="FbcNewsletterSuccess-{{ section.id }}"
+          {% endif %}
+          placeholder="{{ section.settings.placeholder | default: 'Your email address' }}"
+          required
+        >
+        <button type="submit" class="button button--primary fbc-newsletter__submit" name="commit">
+          {{ section.settings.button_label | default: 'Sign up' }}
+        </button>
+      </div>
+      {%- if form.errors -%}
+        <p class="fbc-newsletter__message fbc-newsletter__message--error" id="FbcNewsletterError-{{ section.id }}">
+          {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+        </p>
+      {%- endif -%}
+      {%- if form.posted_successfully? -%}
+        <p class="fbc-newsletter__message" id="FbcNewsletterSuccess-{{ section.id }}" tabindex="-1" autofocus>
+          {% render 'fbc-icon', icon: 'check', class: 'fbc-icon' %} {{ section.settings.success_text | default: "You're in — good taste, on its way." }}
+        </p>
+      {%- endif -%}
+      {%- if section.settings.privacy_text != blank -%}
+        <p class="fbc-newsletter__privacy">{{ section.settings.privacy_text }}</p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter band",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Good Taste, Delivered." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "New arrivals, design notes and the occasional offer — no noise, just baths worth looking at." },
+    { "type": "text", "id": "placeholder", "label": "Input placeholder", "default": "Your email address" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Sign up" },
+    { "type": "text", "id": "success_text", "label": "Success message", "default": "You're in — good taste, on its way." },
+    { "type": "text", "id": "privacy_text", "label": "Privacy note", "default": "Unsubscribe any time. We never share your details." }
+  ],
+  "presets": [{ "name": "Newsletter band" }]
+}
+{% endschema %}

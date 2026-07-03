@@ -1,0 +1,285 @@
+{% comment %} FBC product template — brief §7 {% endcomment %}
+{{ 'fbc-product.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'fbc-product.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign mf = product.metafields.custom
+  assign current_variant = product.selected_or_first_available_variant
+  assign brand = mf.brand.value
+  assign is_painted = false
+  if mf.colour.value == 'painted'
+    assign is_painted = true
+  endif
+-%}
+
+{% render 'fbc-breadcrumbs' %}
+
+<fbc-product
+  class="fbc-product page-width"
+  data-url="{{ product.url }}"
+  data-section="{{ section.id }}"
+>
+  <script type="application/json" data-product-variants>
+    {{ product.variants | json }}
+  </script>
+
+  {%- comment -%} ---------- Gallery ---------- {%- endcomment -%}
+  <div class="fbc-product__gallery">
+    <fbc-product-gallery class="fbc-gallery">
+      <div class="fbc-gallery__stage">
+        {%- for media in product.media -%}
+          <div
+            class="fbc-gallery__slide{% if media.id == current_variant.featured_media.id %} is-active{% elsif forloop.first and current_variant.featured_media == nil %} is-active{% endif %}"
+            data-media-id="{{ media.id }}"
+            {% unless forloop.index0 == 0 %}hidden{% endunless %}
+          >
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- liquid
+                  assign img_loading = 'lazy'
+                  assign img_priority = 'auto'
+                  if forloop.first
+                    assign img_loading = 'eager'
+                    assign img_priority = 'high'
+                  endif
+                  assign zoom_src = media | image_url: width: 2400
+                -%}
+                {{
+                  media
+                  | image_url: width: 1600
+                  | image_tag:
+                    widths: '400, 600, 800, 1000, 1200, 1600',
+                    sizes: '(min-width: 990px) 60vw, 100vw',
+                    class: 'fbc-gallery__image',
+                    loading: img_loading,
+                    fetchpriority: img_priority,
+                    alt: media.alt | escape,
+                    data-zoom-src: zoom_src
+                }}
+              {%- when 'video', 'external_video' -%}
+                {{ media | media_tag: image_size: '1600x', autoplay: false, loop: false, controls: true }}
+              {%- when 'model' -%}
+                {{ media | media_tag }}
+              {%- else -%}
+                {{ media | media_tag }}
+            {%- endcase -%}
+          </div>
+        {%- else -%}
+          <div class="fbc-gallery__slide is-active">
+            <div class="fbc-gallery__image fbc-gallery__image--placeholder"></div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if product.media.size > 1 -%}
+        <ul class="fbc-gallery__thumbs" role="list">
+          {%- for media in product.media -%}
+            <li>
+              <button
+                type="button"
+                class="fbc-gallery__thumb{% if forloop.first %} is-active{% endif %}"
+                data-thumb="{{ media.id }}"
+                aria-label="View image {{ forloop.index }}"
+              >
+                {{ media.preview_image | image_url: width: 200 | image_tag: widths: '100, 200', loading: 'lazy', alt: '' }}
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </fbc-product-gallery>
+  </div>
+
+  {%- comment -%} ---------- Buy column ---------- {%- endcomment -%}
+  <div class="fbc-product__buy">
+    {%- if brand != blank -%}<p class="fbc-product__brand">{{ brand }}</p>{%- endif -%}
+    <h1 class="fbc-product__title">{{ product.title }}</h1>
+
+    {%- comment -%} Review stars placeholder (schema-ready) {%- endcomment -%}
+    <div class="fbc-product__reviews" aria-hidden="true">
+      <span class="fbc-stars">
+        {% for i in (1..5) %}{% render 'fbc-icon', icon: 'star', class: 'fbc-icon' %}{% endfor %}
+      </span>
+      <span class="fbc-product__reviews-note">Reviews coming soon</span>
+    </div>
+
+    <div class="fbc-product__price" data-price-block>
+      {%- render 'fbc-price', product: product, variant: current_variant -%}
+    </div>
+
+    {%- if settings.fbc_finance_enabled -%}
+      {%- assign months = settings.fbc_finance_divisor | default: 12 -%}
+      {%- assign monthly = current_variant.price | divided_by: months -%}
+      <p class="fbc-product__finance" data-finance>
+        or from <strong>{{ monthly | money }}/month</strong> — finance available.
+        <a class="fbc-link" href="/pages/finance">How finance works</a>
+      </p>
+    {%- endif -%}
+
+    <span class="fbc-delivery-line fbc-product__delivery-micro">
+      {% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %} Free delivery, 3–5 working days
+    </span>
+
+    {%- comment -%} Key-spec chips {%- endcomment -%}
+    {%- assign has_chips = false -%}
+    {%- if mf.size_mm.value or mf.material.value or mf.ended.value or mf.colour.value -%}{%- assign has_chips = true -%}{%- endif -%}
+    {%- if has_chips -%}
+      <ul class="fbc-chips fbc-product__chips" role="list">
+        {%- if mf.size_mm.value -%}<li class="fbc-chip">{% render 'fbc-icon', icon: 'ruler', class: 'fbc-icon' %} {{ mf.size_mm.value }}mm</li>{%- endif -%}
+        {%- if mf.material.value != blank -%}<li class="fbc-chip">{% render 'fbc-icon', icon: 'droplet', class: 'fbc-icon' %} {{ mf.material.value | replace: '-', ' ' | capitalize }}</li>{%- endif -%}
+        {%- if mf.ended.value != blank -%}<li class="fbc-chip">{{ mf.ended.value | capitalize }} ended</li>{%- endif -%}
+        {%- if mf.colour.value != blank -%}<li class="fbc-chip">{{ mf.colour.value | capitalize }}</li>{%- endif -%}
+      </ul>
+    {%- endif -%}
+
+    {%- comment -%} Buy form {%- endcomment -%}
+    <product-form class="fbc-product__form" data-hide-errors="false">
+      {%- form 'product', product, id: 'FbcProductForm', class: 'fbc-buy-form', novalidate: 'novalidate' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id disabled>
+
+        {%- unless product.has_only_default_variant -%}
+          <div class="fbc-variants" data-variant-pickers>
+            {%- for option in product.options_with_values -%}
+              <div class="fbc-variant">
+                <label class="fbc-variant__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+                  {{ option.name }}
+                  <span class="fbc-variant__value" data-option-selected="{{ forloop.index0 }}">{{ option.selected_value }}</span>
+                </label>
+                <div class="fbc-variant__select-wrap">
+                  <select
+                    id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                    class="fbc-variant__select"
+                    data-option-index="{{ forloop.index0 }}"
+                    name="options[{{ option.name | escape }}]"
+                  >
+                    {%- for value in option.values -%}
+                      <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                    {%- endfor -%}
+                  </select>
+                  <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endunless -%}
+
+        <div class="fbc-product__cta-row">
+          <div class="fbc-qty">
+            <label class="fbc-visually-hidden" for="Quantity-{{ section.id }}">Quantity</label>
+            <button type="button" class="fbc-qty__btn" data-qty-minus aria-label="Decrease quantity">−</button>
+            <input id="Quantity-{{ section.id }}" class="fbc-qty__input" type="number" name="quantity" value="1" min="1" inputmode="numeric" data-qty-input>
+            <button type="button" class="fbc-qty__btn" data-qty-plus aria-label="Increase quantity">+</button>
+          </div>
+
+          <button
+            type="submit"
+            name="add"
+            class="button button--primary fbc-product__add"
+            data-add-button
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            <span data-add-text>
+              {%- if current_variant.available -%}Add to Basket{%- else -%}Sold out{%- endif -%}
+            </span>
+            <span class="loading__spinner hidden" data-add-spinner>
+              <svg class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle></svg>
+            </span>
+          </button>
+        </div>
+
+        <div class="product-form__error-message-wrapper fbc-product__error" role="alert" hidden>
+          <span class="product-form__error-message"></span>
+        </div>
+
+        {{ form | payment_button }}
+      {%- endform -%}
+    </product-form>
+
+    {%- comment -%} Delivery promise box {%- endcomment -%}
+    {% render 'fbc-delivery-box' %}
+
+    {%- comment -%} RAL note for painted baths {%- endcomment -%}
+    {%- if is_painted -%}
+      <div class="fbc-ral-note">
+        <strong>Painted to order.</strong> This bath can be painted in any RAL colour — add your chosen
+        colour at checkout, or <a class="fbc-link" href="/pages/contact">contact us</a> and we'll set it up for you.
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Will it fit panel {%- endcomment -%}
+    {% render 'fbc-will-it-fit' %}
+  </div>
+</fbc-product>
+
+{%- comment -%} ---------- Tabs / accordion ---------- {%- endcomment -%}
+<section class="fbc-product-info page-width">
+  <div class="fbc-accordion">
+    <details class="fbc-accordion__item" open>
+      <summary class="fbc-accordion__summary"><span>Description</span><span class="fbc-accordion__icon" aria-hidden="true"></span></summary>
+      <div class="fbc-accordion__body rte">{{ product.description }}</div>
+    </details>
+
+    <details class="fbc-accordion__item">
+      <summary class="fbc-accordion__summary"><span>Specifications</span><span class="fbc-accordion__icon" aria-hidden="true"></span></summary>
+      <div class="fbc-accordion__body">{% render 'fbc-specs-table' %}</div>
+    </details>
+
+    <details class="fbc-accordion__item">
+      <summary class="fbc-accordion__summary"><span>Delivery &amp; Returns</span><span class="fbc-accordion__icon" aria-hidden="true"></span></summary>
+      <div class="fbc-accordion__body rte">
+        <p><strong>Free UK delivery on every order</strong>, arriving in 3–5 working days.
+        {% if product.metafields.custom.nextday_eligible.value == true %}A next-working-day upgrade is available on this bath at checkout — {{ settings.fbc_nextday_cutoff | default: 'order by 12pm Mon–Thu' }}.{% endif %}</p>
+        <p>Not quite right? See our <a href="/pages/returns-cancellations">returns &amp; cancellations</a> policy — and our <a href="/pages/delivery-information">full delivery information</a>.</p>
+      </div>
+    </details>
+
+    {%- if mf.guarantee.value != blank -%}
+      <details class="fbc-accordion__item">
+        <summary class="fbc-accordion__summary"><span>Guarantee</span><span class="fbc-accordion__icon" aria-hidden="true"></span></summary>
+        <div class="fbc-accordion__body rte">
+          <p>This bath is covered by a <strong>{{ mf.guarantee.value }}</strong> manufacturer's guarantee against defects. Register your purchase and keep your order confirmation as proof.</p>
+        </div>
+      </details>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- comment -%} ---------- Complete the look cross-sell ---------- {%- endcomment -%}
+{% render 'fbc-cross-sell', product: product %}
+
+{%- comment -%} ---------- Product JSON-LD ---------- {%- endcomment -%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "description": {{ product.description | strip_html | truncate: 500 | json }},
+    {% if brand != blank %}"brand": { "@type": "Brand", "name": {{ brand | json }} },{% endif %}
+    "url": {{ request.origin | append: product.url | json }},
+    {% if product.featured_media %}"image": {{ product.featured_media | image_url: width: 1200 | prepend: 'https:' | json }},{% endif %}
+    {% if product.selected_or_first_available_variant.sku != blank %}"sku": {{ product.selected_or_first_available_variant.sku | json }},{% endif %}
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "price": "{{ current_variant.price | divided_by: 100.0 }}",
+      "availability": "https://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}",
+      "url": {{ request.origin | append: product.url | json }},
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": {{ cart.currency.iso_code | json }} },
+        "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "GB" }
+      }
+    }
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "settings": [
+    { "type": "paragraph", "content": "The bespoke Freestanding Bath Co product page. Cross-sell pulls from taps, wastes and feet collections automatically." }
+  ]
+}
+{% endschema %}

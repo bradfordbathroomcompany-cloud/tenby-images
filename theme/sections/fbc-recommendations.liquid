@@ -1,0 +1,12 @@
+{% comment %}
+  Rendered by the product recommendations API (?section_id=fbc-recommendations).
+  Returns only the cross-sell grid markup for fbc-product.js to swap in.
+{% endcomment %}
+{%- if recommendations.performed and recommendations.products_count > 0 -%}
+  {%- for rec in recommendations.products limit: 3 -%}
+    <li>{% render 'fbc-card-product', card_product: rec, quick_add: true, section_id: 'fbc-cross', sizes: '(min-width: 750px) 30vw, 80vw' %}</li>
+  {%- endfor -%}
+{%- endif -%}
+{% schema %}
+{ "name": "Recommendations (internal)" }
+{% endschema %}

@@ -1,0 +1,35 @@
+{% comment %}
+  "Complete the look" cross-sell — brief §7. The AOV engine.
+  Uses Shopify product recommendations (complementary), falling back to
+  the taps / wastes / feet collections. 3 cards with quick-add.
+{% endcomment %}
+
+<section class="fbc-cross-sell fbc-section" data-cross-sell data-product-id="{{ product.id }}" data-url="{{ routes.product_recommendations_url }}?section_id=fbc-recommendations&product_id={{ product.id }}&limit=3&intent=complementary">
+  <div class="page-width">
+    <header class="fbc-section-header fbc-section-header--split">
+      <div>
+        <span class="fbc-eyebrow">Finish the look</span>
+        <h2>Complete the Look</h2>
+      </div>
+    </header>
+
+    {%- assign rec_output = recommendations.products | default: empty -%}
+    <ul class="fbc-cross-sell__grid" role="list" data-cross-sell-grid>
+      {%- if recommendations.performed and recommendations.products_count > 0 -%}
+        {%- for rec in recommendations.products limit: 3 -%}
+          <li>{% render 'fbc-card-product', card_product: rec, quick_add: true, section_id: 'fbc-cross', sizes: '(min-width: 750px) 30vw, 80vw' %}</li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} Fallback: pull from accessory collections {%- endcomment -%}
+        {%- assign fallback = collections['freestanding-bath-taps'].products | concat: collections['bath-wastes-fillers'].products | concat: collections['bath-feet-legs'].products -%}
+        {%- assign shown = 0 -%}
+        {%- for acc in fallback -%}
+          {%- if shown < 3 and acc.id != product.id -%}
+            <li>{% render 'fbc-card-product', card_product: acc, quick_add: true, section_id: 'fbc-cross', sizes: '(min-width: 750px) 30vw, 80vw' %}</li>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+</section>

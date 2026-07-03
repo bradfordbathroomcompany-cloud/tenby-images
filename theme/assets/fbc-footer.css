@@ -1,0 +1,55 @@
+/* Freestanding Bath Co — footer */
+.fbc-footer { padding: var(--space-8) 0 var(--space-4); margin-top: auto; }
+.fbc-footer__top {
+  display: grid;
+  gap: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid rgb(250 246 239 / 0.14);
+}
+@media screen and (min-width: 990px) {
+  .fbc-footer__top { grid-template-columns: 1.2fr 2fr; gap: var(--space-8); }
+}
+.fbc-footer__logo { max-height: 4.4rem; width: auto; }
+.fbc-footer__logotype { color: var(--c-cream); }
+.fbc-footer__blurb { color: rgb(250 246 239 / 0.7); margin: var(--space-2) 0 var(--space-3); max-width: 40ch; font-size: var(--fs-small); }
+.fbc-footer__trust { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.9rem; }
+.fbc-footer__trust li { display: flex; align-items: center; gap: 1rem; font-size: var(--fs-micro); color: rgb(250 246 239 / 0.75); }
+.fbc-footer__trust .fbc-icon { width: 1.8rem; height: 1.8rem; color: var(--c-brass); flex: none; }
+
+.fbc-footer__nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5) var(--space-4); }
+@media screen and (min-width: 750px) { .fbc-footer__nav { grid-template-columns: repeat(3, 1fr); } }
+.fbc-footer__col-title {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(250 246 239 / 0.55);
+  margin: 0 0 1.4rem;
+}
+.fbc-footer__links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.9rem; }
+.fbc-footer__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: var(--fs-small);
+  color: rgb(250 246 239 / 0.85);
+  text-decoration: none;
+}
+.fbc-footer__links a:hover { color: var(--c-cream); text-decoration: underline; text-underline-offset: 0.25em; }
+.fbc-footer__links .fbc-icon { width: 1.7rem; height: 1.7rem; color: var(--c-brass); }
+.fbc-footer__social { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: 1.4rem; }
+.fbc-footer__social a { font-size: var(--fs-micro); color: rgb(250 246 239 / 0.7); text-decoration: underline; text-underline-offset: 0.25em; }
+.fbc-footer__social a:hover { color: var(--c-cream); }
+
+.fbc-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+}
+.fbc-footer__copy { margin: 0; font-size: var(--fs-micro); color: rgb(250 246 239 / 0.55); }
+.fbc-footer__payment { list-style: none; display: flex; flex-wrap: wrap; gap: 0.6rem; padding: 0; margin: 0; }
+.fbc-footer__payment-icon { width: 3.8rem; height: auto; border-radius: 2px; }

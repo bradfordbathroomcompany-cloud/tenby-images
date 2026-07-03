@@ -1,0 +1,4 @@
+{
+  "sections": { "main": { "type": "fbc-main-article", "settings": { "drop_cap": true } } },
+  "order": ["main"]
+}

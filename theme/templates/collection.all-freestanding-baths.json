@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "fbc-main-collection",
+      "blocks": {
+        "c1": { "type": "chip", "settings": { "collection": "roll-top-baths" } },
+        "c2": { "type": "chip", "settings": { "collection": "slipper-baths" } },
+        "c3": { "type": "chip", "settings": { "collection": "boat-bateau-baths" } },
+        "c4": { "type": "chip", "settings": { "collection": "back-to-wall-freestanding-baths" } },
+        "c5": { "type": "chip", "settings": { "collection": "freestanding-shower-baths" } },
+        "c6": { "type": "chip", "settings": { "collection": "single-ended-freestanding-baths" } },
+        "c7": { "type": "chip", "settings": { "collection": "double-ended-freestanding-baths" } },
+        "c8": { "type": "chip", "settings": { "collection": "square-straight-edged-freestanding-baths" } }
+      },
+      "block_order": ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"]
+    }
+  },
+  "order": ["main"]
+}

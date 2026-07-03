@@ -1,0 +1,81 @@
+{% comment %}
+  FBC FAQ page — accordion + FAQPage JSON-LD, auto-built from the page's
+  h2 (groups) / h3 (questions) structure — brief §9.
+  Falls back to rendering page content as-is if no h3s are found.
+{% endcomment %}
+{{ 'fbc-pages.css' | asset_url | stylesheet_tag }}
+
+{% render 'fbc-breadcrumbs' %}
+
+<div class="fbc-faq">
+  <header class="fbc-page-head">
+    <span class="fbc-eyebrow fbc-page-head__eyebrow">Good to know</span>
+    <h1>{{ page.title | default: 'Frequently asked questions' }}</h1>
+  </header>
+
+  <div class="page-width fbc-prose">
+    {%- assign content = page.content -%}
+    {%- if content contains '<h3' -%}
+      {%- comment -%} Split into h2 groups; within each, h3 = question {%- endcomment -%}
+      {%- assign groups = content | split: '<h2' -%}
+      {%- for group in groups -%}
+        {%- if forloop.first and group contains '<h3' == false and group == groups.first and groups.size > 1 -%}
+          {%- comment -%} preamble before first h2 — render as intro {%- endcomment -%}
+          {%- if group != blank -%}<div class="rte">{{ group }}</div>{%- endif -%}
+          {%- continue -%}
+        {%- endif -%}
+
+        {%- assign group_title = '' -%}
+        {%- if forloop.first == false or groups.size == 1 -%}
+          {%- assign after = group | split: '>' -%}
+          {%- assign group_title = after[1] | split: '</h2' | first | strip_html | strip -%}
+        {%- endif -%}
+
+        <section class="fbc-faq__group">
+          {%- if group_title != blank -%}<h2 class="fbc-faq__group-title">{{ group_title }}</h2>{%- endif -%}
+          {%- assign q_blocks = group | split: '<h3' -%}
+          {%- for q in q_blocks offset: 1 -%}
+            {%- assign q_after = q | split: '>' -%}
+            {%- assign q_text = q_after[1] | split: '</h3' | first | strip_html | strip -%}
+            {%- assign a_html = q | split: '</h3>' | last | split: '<h3' | first -%}
+            {%- if q_text != blank -%}
+              <details class="fbc-faq__item">
+                <summary class="fbc-faq__q"><span>{{ q_text }}</span><span class="fbc-faq__icon" aria-hidden="true"></span></summary>
+                <div class="fbc-faq__a rte">{{ a_html }}</div>
+              </details>
+            {%- endif -%}
+          {%- endfor -%}
+        </section>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="rte">{{ content }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if page.content contains '<h3' -%}
+  {%- assign all_q = page.content | split: '<h3' -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- assign emitted = 0 -%}
+        {%- for q in all_q offset: 1 -%}
+          {%- assign q_after = q | split: '>' -%}
+          {%- assign q_text = q_after[1] | split: '</h3' | first | strip_html | strip -%}
+          {%- assign a_text = q | split: '</h3>' | last | split: '<h3' | first | split: '<h2' | first | strip_html | strip | truncate: 600 -%}
+          {%- if q_text != blank and a_text != blank -%}
+            {%- if emitted > 0 %},{% endif -%}
+            { "@type": "Question", "name": {{ q_text | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ a_text | json }} } }
+            {%- assign emitted = emitted | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{ "name": "FAQ", "tag": "section", "settings": [] }
+{% endschema %}

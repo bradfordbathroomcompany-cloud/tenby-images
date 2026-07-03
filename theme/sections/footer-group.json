@@ -1,0 +1,20 @@
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "fbc-footer": {
+      "type": "fbc-footer",
+      "blocks": {
+        "m1": { "type": "menu", "settings": { "heading": "Shop baths", "menu": "main-menu" } },
+        "m2": { "type": "menu", "settings": { "heading": "Help & information", "menu": "footer" } }
+      },
+      "block_order": ["m1", "m2"],
+      "settings": {
+        "logotype": "Freestanding Bath Co",
+        "blurb": "The UK's specialist in freestanding baths — chosen for character, comfort and craft, and delivered free.",
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": ["fbc-footer"]
+}

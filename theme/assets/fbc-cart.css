@@ -1,0 +1,44 @@
+/* Freestanding Bath Co — cart drawer & cart page reskin + messaging */
+
+/* Reskin Dawn cart drawer shell */
+.cart-drawer { background: var(--c-cream); color: var(--c-ink); }
+.cart-drawer__inner { background: var(--c-cream); }
+.drawer__heading, .cart-drawer h2 { font-family: var(--font-heading); color: var(--c-ink); }
+.cart-drawer__footer { border-top: 1px solid var(--c-line); }
+.cart-item__name { font-family: var(--font-heading); color: var(--c-ink); text-decoration: none; }
+.cart-item__price, .totals__total-value { color: var(--c-ink); }
+.cart-drawer .totals__total { font-family: var(--font-body); font-weight: 600; }
+
+/* Messaging block */
+.fbc-cart-msg {
+  display: grid;
+  gap: 1rem;
+  padding: var(--space-2);
+  background: var(--c-paper);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-2);
+}
+.fbc-cart-msg__line { display: flex; align-items: flex-start; gap: 1rem; margin: 0; font-size: var(--fs-small); }
+.fbc-cart-msg__line .fbc-icon { width: 1.9rem; height: 1.9rem; flex: none; margin-top: 0.1rem; }
+.fbc-cart-msg__line--free .fbc-icon { color: var(--c-success); }
+.fbc-cart-msg__line--nextday .fbc-icon { color: var(--c-brass); }
+
+/* Accessory cross-sell row */
+.fbc-cart-addon {
+  padding: var(--space-2);
+  border: 1px dashed rgb(166 124 68 / 0.4);
+  border-radius: var(--radius-card);
+  background: var(--c-brass-tint);
+  margin-bottom: var(--space-2);
+}
+.fbc-cart-addon__label { margin: 0 0 1rem; font-size: var(--fs-micro); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-brass-dark); }
+.fbc-cart-addon__row { display: grid; grid-template-columns: 4.8rem 1fr auto; gap: 1.2rem; align-items: center; }
+.fbc-cart-addon__img { width: 4.8rem; height: 6rem; object-fit: cover; border-radius: 2px; }
+.fbc-cart-addon__info { display: grid; gap: 0.2rem; min-width: 0; }
+.fbc-cart-addon__title { font-size: var(--fs-small); color: var(--c-ink); text-decoration: none; font-family: var(--font-heading); }
+.fbc-cart-addon__price { font-size: var(--fs-micro); font-weight: 600; }
+.fbc-cart-addon__add { min-height: 3.8rem; padding: 0 1.6rem; }
+
+/* Cart page */
+.fbc-cart-msg--page { max-width: 40rem; }

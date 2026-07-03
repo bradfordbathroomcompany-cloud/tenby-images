@@ -1,0 +1,4 @@
+{
+  "sections": { "main": { "type": "fbc-search" } },
+  "order": ["main"]
+}

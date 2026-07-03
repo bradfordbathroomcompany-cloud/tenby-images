@@ -1,0 +1,116 @@
+/* Freestanding Bath Co — product card (loaded globally; cards appear everywhere) */
+
+.fbc-card { display: flex; flex-direction: column; height: 100%; }
+
+.fbc-card__media-link { display: block; text-decoration: none; }
+.fbc-card__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-card);
+  background: var(--c-brass-tint);
+}
+.fbc-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 250ms var(--ease-out), transform 250ms var(--ease-out);
+}
+.fbc-card__image--placeholder { background: linear-gradient(150deg, var(--c-brass-tint), var(--c-sage-tint)); }
+.fbc-card__image--secondary { opacity: 0; }
+@media (hover: hover) {
+  .fbc-card:hover .fbc-card__image--secondary { opacity: 1; }
+  .fbc-card:hover .fbc-card__image--primary:not(:only-child) { opacity: 0; }
+  .fbc-card:hover .fbc-card__image--primary:only-child { transform: scale(1.03); }
+}
+
+.fbc-card__badges {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  z-index: 1;
+}
+
+.fbc-card--sold-out .fbc-card__image { opacity: 0.55; }
+
+.fbc-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1.4rem;
+  flex: 1;
+}
+
+.fbc-card__brand {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-ink-70);
+}
+
+.fbc-card__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h4);
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 0;
+}
+.fbc-card__link { text-decoration: none; color: var(--c-ink); }
+.fbc-card__link:hover { color: var(--c-brass-dark); }
+/* Make the whole card clickable without nesting interactive elements */
+.fbc-card { position: relative; }
+.fbc-card__link::after { content: ''; position: absolute; inset: 0; }
+.fbc-card__quick-form { position: relative; z-index: 1; }
+
+.fbc-card__price { font-size: var(--fs-body); display: flex; flex-wrap: wrap; align-items: baseline; }
+.fbc-price--sale { color: var(--c-error); }
+
+.fbc-card__specs {
+  margin: 0;
+  font-size: var(--fs-micro);
+  color: var(--c-ink-70);
+}
+
+.fbc-card .fbc-delivery-line { margin-top: 0.2rem; }
+
+.fbc-card__quick-add { margin-top: 1rem; min-height: 4rem; padding: 0 2rem; width: 100%; }
+
+/* Grid helpers used by carousels & grids that host cards */
+.fbc-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4) var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+@media screen and (min-width: 990px) {
+  .fbc-product-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-6) var(--space-3); }
+}
+
+/* Horizontal scroll carousel (Signature Baths, cross-sells) */
+.fbc-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 72%;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.8rem;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-brass) transparent;
+}
+@media screen and (min-width: 750px) { .fbc-carousel { grid-auto-columns: 38%; } }
+@media screen and (min-width: 990px) { .fbc-carousel { grid-auto-columns: 23.5%; gap: var(--space-3); } }
+.fbc-carousel > li { scroll-snap-align: start; }

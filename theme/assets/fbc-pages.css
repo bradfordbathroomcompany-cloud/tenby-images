@@ -1,0 +1,133 @@
+/* Freestanding Bath Co — pages, contact, FAQ, blog, article, 404, search, password */
+
+/* Generic page header */
+.fbc-page-head { text-align: center; padding: var(--space-section) 0 var(--space-4); }
+.fbc-page-head--left { text-align: left; }
+.fbc-page-head__eyebrow { margin-bottom: var(--space-2); }
+.fbc-page-head h1 { margin: 0 auto; max-width: 18ch; }
+.fbc-page-head p { color: var(--c-ink-70); margin: var(--space-2) auto 0; max-width: 60ch; }
+
+/* Prose page */
+.fbc-page { padding-bottom: var(--space-section); }
+.fbc-page .rte { font-size: var(--fs-body); }
+.fbc-page .rte > *:first-child { margin-top: 0; }
+.fbc-page .rte img { border-radius: var(--radius-card); }
+
+/* Contact */
+.fbc-contact { padding-bottom: var(--space-section); }
+.fbc-contact__grid { display: grid; gap: var(--space-5); }
+@media screen and (min-width: 990px) { .fbc-contact__grid { grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: start; } }
+.fbc-contact__form { display: grid; gap: var(--space-2); }
+.fbc-field { display: grid; gap: 0.6rem; }
+.fbc-field label { font-size: var(--fs-small); font-weight: 600; }
+.fbc-field input, .fbc-field textarea {
+  width: 100%;
+  min-height: 5rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--c-line);
+  border-radius: 2px;
+  background: var(--c-paper);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--c-ink);
+}
+.fbc-field textarea { min-height: 14rem; resize: vertical; }
+.fbc-field--row { grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+@media screen and (max-width: 749px) { .fbc-field--row { grid-template-columns: 1fr; } }
+.fbc-contact__card {
+  background: var(--c-paper);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+}
+.fbc-contact__card h2 { font-size: var(--fs-h3); margin: 0 0 var(--space-2); }
+.fbc-contact__detail { display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: var(--space-2); font-size: var(--fs-small); }
+.fbc-contact__detail .fbc-icon { color: var(--c-brass); width: 2.2rem; height: 2.2rem; flex: none; }
+.fbc-contact__detail a { color: var(--c-ink); text-decoration: none; }
+.fbc-contact__detail a:hover { color: var(--c-brass-dark); }
+.fbc-contact__promise { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--c-line); font-size: var(--fs-small); color: var(--c-ink-70); }
+.fbc-form__success { background: rgb(61 107 79 / 0.12); color: var(--c-success); padding: 1.4rem 1.6rem; border-radius: 2px; margin-bottom: var(--space-2); }
+.fbc-form__error { background: rgb(179 38 30 / 0.1); color: var(--c-error); padding: 1.4rem 1.6rem; border-radius: 2px; margin-bottom: var(--space-2); }
+
+/* FAQ */
+.fbc-faq { padding-bottom: var(--space-section); }
+.fbc-faq__group { margin-bottom: var(--space-5); }
+.fbc-faq__group-title { font-size: var(--fs-h3); margin: 0 0 var(--space-2); }
+.fbc-faq__item { border-bottom: 1px solid var(--c-line); }
+.fbc-faq__q {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: var(--space-2) 0; cursor: pointer; list-style: none;
+  font-family: var(--font-heading); font-size: var(--fs-h4);
+}
+.fbc-faq__q::-webkit-details-marker { display: none; }
+.fbc-faq__icon { position: relative; width: 1.6rem; height: 1.6rem; flex: none; }
+.fbc-faq__icon::before, .fbc-faq__icon::after { content: ''; position: absolute; background: var(--c-brass); transition: transform var(--dur-base); }
+.fbc-faq__icon::before { top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-50%); }
+.fbc-faq__icon::after { left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); }
+.fbc-faq__item[open] .fbc-faq__icon::after { transform: translateX(-50%) scaleY(0); }
+.fbc-faq__a { padding-bottom: var(--space-2); color: var(--c-ink-70); max-width: 72ch; }
+
+/* Blog */
+.fbc-blog { padding-bottom: var(--space-section); }
+.fbc-blog__grid { display: grid; gap: var(--space-4); }
+@media screen and (min-width: 750px) { .fbc-blog__grid { grid-template-columns: repeat(2, 1fr); } }
+@media screen and (min-width: 990px) { .fbc-blog__grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-5); } }
+.fbc-article-card { display: flex; flex-direction: column; text-decoration: none; }
+.fbc-article-card__media { aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--radius-card); background: var(--c-brass-tint); }
+.fbc-article-card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 250ms var(--ease-out); }
+.fbc-article-card:hover .fbc-article-card__media img { transform: scale(1.04); }
+.fbc-article-card__meta { font-size: var(--fs-micro); color: var(--c-brass-dark); margin: var(--space-2) 0 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.fbc-article-card__title { font-size: var(--fs-h3); margin: 0 0 0.8rem; color: var(--c-ink); }
+.fbc-article-card__excerpt { font-size: var(--fs-small); color: var(--c-ink-70); margin: 0; }
+
+/* Article */
+.fbc-article { padding-bottom: var(--space-section); }
+.fbc-article__head { text-align: center; padding: var(--space-section) 0 var(--space-4); }
+.fbc-article__meta { font-size: var(--fs-micro); color: var(--c-brass-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: var(--space-2); }
+.fbc-article__title { max-width: 20ch; margin: 0 auto; }
+.fbc-article__hero { margin: var(--space-4) 0; }
+.fbc-article__hero img { width: 100%; border-radius: var(--radius-card); }
+.fbc-article__body { font-size: var(--fs-body); }
+.fbc-article__body.fbc-dropcap > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-heading);
+  font-size: 6.4rem;
+  line-height: 0.8;
+  padding: 0.6rem 1.2rem 0 0;
+  color: var(--c-brass);
+}
+.fbc-article__body > *:first-child { margin-top: 0; }
+.fbc-inline-product {
+  display: grid; grid-template-columns: 12rem 1fr; gap: var(--space-3); align-items: center;
+  border: 1px solid var(--c-line); border-radius: var(--radius-card); padding: var(--space-3);
+  background: var(--c-paper); margin: var(--space-4) 0; text-decoration: none;
+}
+.fbc-inline-product img { width: 12rem; aspect-ratio: 4/5; object-fit: cover; border-radius: 2px; }
+.fbc-inline-product__title { font-family: var(--font-heading); font-size: var(--fs-h4); color: var(--c-ink); }
+.fbc-article__related { border-top: 1px solid var(--c-line); padding-top: var(--space-5); margin-top: var(--space-6); }
+
+/* 404 */
+.fbc-404 { text-align: center; padding: var(--space-section) 0; }
+.fbc-404__title { margin: 0 0 var(--space-2); }
+.fbc-404__text { color: var(--c-ink-70); margin: 0 auto var(--space-4); max-width: 46ch; }
+.fbc-404__search { max-width: 46rem; margin: 0 auto var(--space-5); display: flex; gap: 1rem; }
+.fbc-404__search input { flex: 1; min-height: 5rem; padding: 0 1.6rem; border: 1px solid var(--c-line); border-radius: 2px; background: var(--c-paper); }
+.fbc-404__links { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; list-style: none; padding: 0; margin: 0; }
+
+/* Search results */
+.fbc-search-results-page { padding-bottom: var(--space-section); }
+.fbc-search-summary { color: var(--c-ink-70); margin-bottom: var(--space-4); }
+
+/* Password */
+.fbc-password { min-height: 100vh; display: grid; }
+.fbc-password__media { position: absolute; inset: 0; }
+.fbc-password__media img { width: 100%; height: 100%; object-fit: cover; }
+.fbc-password__scrim { position: absolute; inset: 0; background: linear-gradient(to bottom, rgb(20 16 12 / 0.5), rgb(20 16 12 / 0.7)); }
+.fbc-password__inner { position: relative; z-index: 1; display: grid; place-items: center; text-align: center; padding: var(--space-6) var(--space-2); min-height: 100vh; color: #fff; }
+.fbc-password__logotype { font-family: var(--font-heading); font-weight: 600; font-size: clamp(3.2rem, 2.4rem + 3vw, 5.6rem); color: #fff; }
+.fbc-password__micro { letter-spacing: 0.16em; text-transform: uppercase; font-size: var(--fs-micro); color: rgb(255 255 255 / 0.8); margin-top: 0.8rem; }
+.fbc-password__tagline { font-size: var(--fs-h3); font-family: var(--font-heading); margin: var(--space-4) 0; color: #fff; }
+.fbc-password__form { display: flex; gap: 1rem; max-width: 42rem; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+.fbc-password__form input { flex: 1 1 24rem; min-height: 5rem; padding: 0 1.6rem; border: 0; border-radius: 2px; background: rgb(255 255 255 / 0.95); }
+.fbc-password__enter { margin-top: var(--space-4); }
+.fbc-password__enter a { color: rgb(255 255 255 / 0.8); font-size: var(--fs-small); text-decoration: underline; }

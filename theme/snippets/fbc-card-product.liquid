@@ -1,0 +1,147 @@
+{% comment %}
+  Freestanding Bath Co product card — brief §6.
+  Accepts:
+  - card_product {Object} product
+  - lazy_load {Boolean} default true
+  - sizes {String} img sizes attribute, default matched to 3-up grid
+  - quick_add {Boolean} show quick-add button (accessory cross-sells)
+  - section_id {String} for unique form ids when quick_add
+
+  Consumes metafields (namespace custom): brand, size_mm, material, ended, colour
+  Tags: new-in, sale, nextday-eligible
+{% endcomment %}
+
+{%- liquid
+  assign lazy = lazy_load | default: true, allow_false: true
+  assign img_sizes = sizes | default: '(min-width: 990px) 30vw, (min-width: 750px) 45vw, 50vw'
+
+  assign brand = card_product.metafields.custom.brand.value
+  assign size_mm = card_product.metafields.custom.size_mm.value
+  assign material = card_product.metafields.custom.material.value
+  assign ended = card_product.metafields.custom.ended.value
+
+  assign specs = ''
+  if size_mm
+    assign specs = size_mm | append: 'mm'
+  endif
+  if material
+    assign material_label = material | replace: '-', ' ' | capitalize
+    if specs == ''
+      assign specs = material_label
+    else
+      assign specs = specs | append: ' · ' | append: material_label
+    endif
+  endif
+  if ended
+    assign ended_label = ended | capitalize | append: ' Ended'
+    if specs == ''
+      assign specs = ended_label
+    else
+      assign specs = specs | append: ' · ' | append: ended_label
+    endif
+  endif
+
+  assign on_sale = false
+  if card_product.compare_at_price > card_product.price
+    assign on_sale = true
+    assign saving = card_product.compare_at_price | minus: card_product.price
+  endif
+-%}
+
+<article class="fbc-card{% if card_product.available == false %} fbc-card--sold-out{% endif %}">
+  <a href="{{ card_product.url }}" class="fbc-card__media-link" tabindex="-1" aria-hidden="true">
+    <div class="fbc-card__media">
+      {%- if card_product.featured_media -%}
+        {{
+          card_product.featured_media
+          | image_url: width: 900
+          | image_tag:
+            widths: '250, 360, 535, 720, 900',
+            sizes: img_sizes,
+            loading: lazy,
+            class: 'fbc-card__image fbc-card__image--primary',
+            alt: card_product.featured_media.alt | escape
+        }}
+        {%- if card_product.media[1] != null -%}
+          {{
+            card_product.media[1]
+            | image_url: width: 900
+            | image_tag:
+              widths: '250, 360, 535, 720, 900',
+              sizes: img_sizes,
+              loading: 'lazy',
+              class: 'fbc-card__image fbc-card__image--secondary',
+              alt: ''
+          }}
+        {%- endif -%}
+      {%- else -%}
+        <span class="fbc-card__image fbc-card__image--placeholder"></span>
+      {%- endif -%}
+
+      <div class="fbc-card__badges">
+        {%- if settings.fbc_badge_new and card_product.tags contains 'new-in' -%}
+          <span class="fbc-badge fbc-badge--new">New In</span>
+        {%- endif -%}
+        {%- if settings.fbc_badge_sale and on_sale or card_product.tags contains 'sale' -%}
+          <span class="fbc-badge fbc-badge--sale">Sale</span>
+        {%- endif -%}
+        {%- if settings.fbc_badge_nextday and card_product.tags contains 'nextday-eligible' -%}
+          <span class="fbc-badge fbc-badge--nextday">Next-Day Available</span>
+        {%- endif -%}
+        {%- if card_product.available == false -%}
+          <span class="fbc-badge">Sold Out</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </a>
+
+  <div class="fbc-card__info">
+    {%- if brand != blank -%}
+      <span class="fbc-card__brand">{{ brand }}</span>
+    {%- endif -%}
+    <h3 class="fbc-card__title">
+      <a href="{{ card_product.url }}" class="fbc-card__link">{{ card_product.title | escape }}</a>
+    </h3>
+
+    <div class="fbc-card__price">
+      {%- if on_sale -%}
+        <span class="fbc-price--compare">
+          <span class="fbc-visually-hidden">Was </span>{{ card_product.compare_at_price | money }}
+        </span>
+        <span class="fbc-price fbc-price--sale">
+          <span class="fbc-visually-hidden">Now </span>{{ card_product.price | money }}
+        </span>
+        <span class="fbc-price-save">Save {{ saving | money_without_trailing_zeros }}</span>
+      {%- else -%}
+        <span class="fbc-price">
+          {%- if card_product.price_varies -%}From {% endif %}{{ card_product.price | money }}
+        </span>
+      {%- endif -%}
+    </div>
+
+    {%- if specs != blank -%}
+      <p class="fbc-card__specs">{{ specs }}</p>
+    {%- endif -%}
+
+    <span class="fbc-delivery-line">
+      {% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %}
+      Free delivery, 3–5 working days
+    </span>
+
+    {%- if quick_add and card_product.available and card_product.variants.size == 1 -%}
+      <product-form data-section-id="{{ section_id | default: 'fbc-card' }}">
+        {%- form 'product', card_product, class: 'fbc-card__quick-form', novalidate: 'novalidate' -%}
+          <input type="hidden" name="id" value="{{ card_product.selected_or_first_available_variant.id }}">
+          <button
+            type="submit"
+            name="add"
+            class="button button--secondary fbc-card__quick-add"
+            aria-label="Add {{ card_product.title | escape }} to your cart"
+          >
+            Add to cart
+          </button>
+        {%- endform -%}
+      </product-form>
+    {%- endif -%}
+  </div>
+</article>

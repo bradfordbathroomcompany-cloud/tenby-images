@@ -1,0 +1,54 @@
+{% comment %} FBC editorial split — brief §4.4 "One Room. One Hero." {% endcomment %}
+{{ 'fbc-home.css' | asset_url | stylesheet_tag }}
+
+<section class="fbc-section fbc-editorial{% if section.settings.reverse %} fbc-editorial--reverse{% endif %}">
+  <div class="page-width fbc-editorial__grid">
+    <div class="fbc-editorial__media">
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 1400
+          | image_tag:
+            widths: '550, 720, 990, 1400',
+            sizes: '(min-width: 990px) 50vw, 100vw',
+            loading: 'lazy',
+            class: 'fbc-editorial__image',
+            alt: section.settings.image.alt
+        }}
+      {%- else -%}
+        <div class="fbc-editorial__image fbc-editorial__image--placeholder"></div>
+      {%- endif -%}
+    </div>
+    <div class="fbc-editorial__body">
+      {%- if section.settings.eyebrow != blank -%}<span class="fbc-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+      <h2>{{ section.settings.heading }}</h2>
+      <div class="fbc-editorial__text rte">{{ section.settings.text }}</div>
+      {%- if section.settings.cta_label != blank -%}
+        <a class="button button--secondary" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Editorial split",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "checkbox", "id": "reverse", "label": "Image on the right", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our philosophy" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "One Room. One Hero." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Most bathrooms are designed around fittings. Ours are designed around a feeling — the moment you walk in and the bath simply owns the room. We choose every freestanding bath for its character, its comfort and its craft, so you can build the whole space around one beautiful centrepiece.</p>"
+    },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Our Story" },
+    { "type": "url", "id": "cta_url", "label": "Button link", "default": "/pages/about-us" }
+  ],
+  "presets": [{ "name": "Editorial split" }]
+}
+{% endschema %}

@@ -1,0 +1,29 @@
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "fbc-announcement-bar": {
+      "type": "fbc-announcement-bar",
+      "blocks": {
+        "a0": { "type": "announcement", "settings": { "text": "Free UK delivery on every order — 3–5 working days", "link": "/pages/delivery-information" } },
+        "a1": { "type": "announcement", "settings": { "text": "Next-day upgrade available on eligible baths", "link": "/pages/delivery-information" } },
+        "a2": { "type": "announcement", "settings": { "text": "Finance available — spread the cost", "link": "/pages/finance" } }
+      },
+      "block_order": ["a0", "a1", "a2"],
+      "settings": { "interval": 5 }
+    },
+    "fbc-header": {
+      "type": "fbc-header",
+      "settings": {
+        "menu": "main-menu",
+        "sticky": true,
+        "logotype": "Freestanding Bath Co",
+        "microline": "Est. specialists in statement baths",
+        "mega_heading": "The Copper Edit",
+        "mega_text": "Warm metal, serious presence.",
+        "mega_link": "/collections/copper-baths"
+      }
+    }
+  },
+  "order": ["fbc-announcement-bar", "fbc-header"]
+}

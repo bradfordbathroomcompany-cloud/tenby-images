@@ -1,0 +1,73 @@
+{% comment %} FBC social/customer strip — brief §4.8, image row from blocks, no third-party feed {% endcomment %}
+{{ 'fbc-home.css' | asset_url | stylesheet_tag }}
+
+<section class="fbc-section fbc-social">
+  <div class="page-width">
+    <header class="fbc-section-header">
+      {%- if section.settings.hashtag != blank -%}<span class="fbc-eyebrow">{{ section.settings.hashtag }}</span>{%- endif -%}
+      <h2>{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+    </header>
+  </div>
+
+  <ul class="fbc-social__row" role="list">
+    {%- for block in section.blocks -%}
+      <li class="fbc-social__item" {{ block.shopify_attributes }}>
+        {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="fbc-social__link">{%- endif -%}
+        {%- if block.settings.image != blank -%}
+          {{
+            block.settings.image
+            | image_url: width: 720
+            | image_tag:
+              widths: '280, 420, 560, 720',
+              sizes: '(min-width: 990px) 20vw, 40vw',
+              loading: 'lazy',
+              class: 'fbc-social__image',
+              alt: block.settings.caption | default: section.settings.heading
+          }}
+        {%- else -%}
+          <span class="fbc-social__image fbc-social__image--placeholder"></span>
+        {%- endif -%}
+        {%- if block.settings.caption != blank -%}<span class="fbc-social__caption">{{ block.settings.caption }}</span>{%- endif -%}
+        {%- if block.settings.link != blank -%}</a>{%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Social strip",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "At Home With Our Baths" },
+    { "type": "text", "id": "hashtag", "label": "Hashtag", "default": "#MyStatementBath" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Real rooms, real baths — share yours with #MyStatementBath." }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "caption", "label": "Caption", "info": "E.g. the customer's handle or room." },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social strip",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

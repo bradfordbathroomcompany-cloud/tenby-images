@@ -1,0 +1,17 @@
+{% comment %} FBC default page — prose, 720px measure — brief §9 {% endcomment %}
+{{ 'fbc-pages.css' | asset_url | stylesheet_tag }}
+
+{% render 'fbc-breadcrumbs' %}
+
+<article class="fbc-page">
+  <header class="fbc-page-head">
+    <h1>{{ page.title }}</h1>
+  </header>
+  <div class="page-width fbc-prose">
+    <div class="rte">{{ page.content }}</div>
+  </div>
+</article>
+
+{% schema %}
+{ "name": "Page", "tag": "section", "settings": [] }
+{% endschema %}

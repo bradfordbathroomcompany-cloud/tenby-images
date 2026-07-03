@@ -1,0 +1,107 @@
+{% comment %} FBC footer {% endcomment %}
+{{ 'fbc-footer.css' | asset_url | stylesheet_tag }}
+
+<footer class="fbc-footer fbc-inverse">
+  <div class="page-width">
+    <div class="fbc-footer__top">
+      <div class="fbc-footer__brand">
+        {%- if settings.logo != blank -%}
+          {{ settings.logo | image_url: width: 360 | image_tag: widths: '180, 360', class: 'fbc-footer__logo', alt: shop.name, loading: 'lazy' }}
+        {%- else -%}
+          <span class="fbc-header__logotype fbc-footer__logotype">{{ section.settings.logotype | default: shop.name }}</span>
+        {%- endif -%}
+        {%- if section.settings.blurb != blank -%}
+          <p class="fbc-footer__blurb">{{ section.settings.blurb }}</p>
+        {%- endif -%}
+        <ul class="fbc-footer__trust" role="list">
+          <li>{% render 'fbc-icon', icon: 'truck', class: 'fbc-icon' %} Free UK delivery, 3–5 working days</li>
+          <li>{% render 'fbc-icon', icon: 'bolt', class: 'fbc-icon' %} Next-day upgrade on eligible baths</li>
+          <li>{% render 'fbc-icon', icon: 'card', class: 'fbc-icon' %} Finance available</li>
+        </ul>
+      </div>
+
+      <nav class="fbc-footer__nav" aria-label="Footer">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'menu' and block.settings.menu != blank -%}
+            <div class="fbc-footer__col" {{ block.shopify_attributes }}>
+              <h2 class="fbc-footer__col-title">{{ block.settings.heading | default: linklists[block.settings.menu].title }}</h2>
+              <ul class="fbc-footer__links" role="list">
+                {%- for link in linklists[block.settings.menu].links -%}
+                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        <div class="fbc-footer__col fbc-footer__col--contact">
+          <h2 class="fbc-footer__col-title">Talk to a specialist</h2>
+          <ul class="fbc-footer__links" role="list">
+            {%- if section.settings.phone != blank -%}
+              <li><a href="tel:{{ section.settings.phone | replace: ' ', '' }}">{% render 'fbc-icon', icon: 'phone', class: 'fbc-icon' %} {{ section.settings.phone }}</a></li>
+            {%- endif -%}
+            {%- if shop.email != blank -%}
+              <li><a href="mailto:{{ shop.email }}">{% render 'fbc-icon', icon: 'mail', class: 'fbc-icon' %} {{ shop.email }}</a></li>
+            {%- endif -%}
+            <li><a href="/pages/contact">{% render 'fbc-icon', icon: 'chat', class: 'fbc-icon' %} Contact us</a></li>
+          </ul>
+
+          {%- assign has_social = false -%}
+          {%- if settings.fbc_social_instagram != blank or settings.fbc_social_facebook != blank or settings.fbc_social_pinterest != blank or settings.fbc_social_tiktok != blank -%}
+            {%- assign has_social = true -%}
+          {%- endif -%}
+          {%- if has_social -%}
+            <ul class="fbc-footer__social" role="list">
+              {%- if settings.fbc_social_instagram != blank -%}<li><a href="{{ settings.fbc_social_instagram }}" aria-label="Instagram">Instagram</a></li>{%- endif -%}
+              {%- if settings.fbc_social_facebook != blank -%}<li><a href="{{ settings.fbc_social_facebook }}" aria-label="Facebook">Facebook</a></li>{%- endif -%}
+              {%- if settings.fbc_social_pinterest != blank -%}<li><a href="{{ settings.fbc_social_pinterest }}" aria-label="Pinterest">Pinterest</a></li>{%- endif -%}
+              {%- if settings.fbc_social_tiktok != blank -%}<li><a href="{{ settings.fbc_social_tiktok }}" aria-label="TikTok">TikTok</a></li>{%- endif -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      </nav>
+    </div>
+
+    <div class="fbc-footer__bottom">
+      <p class="fbc-footer__copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+        <ul class="fbc-footer__payment" role="list" aria-label="Accepted payment methods">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>{{ type | payment_type_svg_tag: class: 'fbc-footer__payment-icon' }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "text", "id": "logotype", "label": "Text logotype", "default": "Freestanding Bath Co" },
+    { "type": "textarea", "id": "blurb", "label": "Brand blurb", "default": "The UK's specialist in freestanding baths — chosen for character, comfort and craft, and delivered free." },
+    { "type": "text", "id": "phone", "label": "Phone number" },
+    { "type": "checkbox", "id": "show_payment_icons", "label": "Show payment icons", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu column",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [
+        { "type": "menu", "settings": { "heading": "Shop", "menu": "main-menu" } },
+        { "type": "menu", "settings": { "heading": "Help & information", "menu": "footer" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

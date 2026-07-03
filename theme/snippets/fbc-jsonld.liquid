@@ -1,0 +1,46 @@
+{% comment %}
+  Sitewide Organization + WebSite structured data, rendered once in theme.liquid.
+{% endcomment %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ request.origin | json }},
+    {%- if settings.logo -%}
+      "logo": {{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }},
+    {%- endif -%}
+    {%- assign social_links = '' -%}
+    {%- if settings.fbc_social_instagram != blank -%}{%- assign social_links = social_links | append: settings.fbc_social_instagram | append: ',' -%}{%- endif -%}
+    {%- if settings.fbc_social_facebook != blank -%}{%- assign social_links = social_links | append: settings.fbc_social_facebook | append: ',' -%}{%- endif -%}
+    {%- if settings.fbc_social_pinterest != blank -%}{%- assign social_links = social_links | append: settings.fbc_social_pinterest | append: ',' -%}{%- endif -%}
+    {%- if settings.fbc_social_tiktok != blank -%}{%- assign social_links = social_links | append: settings.fbc_social_tiktok | append: ',' -%}{%- endif -%}
+    {%- if social_links != '' -%}
+      {%- assign social_array = social_links | split: ',' -%}
+      "sameAs": {{ social_array | json }},
+    {%- endif -%}
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "email": {{ shop.email | json }},
+      "areaServed": "GB",
+      "availableLanguage": "English"
+    }
+  }
+</script>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ shop.name | json }},
+    "url": {{ request.origin | json }},
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ request.origin }}/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+</script>

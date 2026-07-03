@@ -1,0 +1,97 @@
+{% comment %}
+  Breadcrumb trail + BreadcrumbList JSON-LD.
+  Renders on collection, product, page, article templates.
+{% endcomment %}
+
+{%- liquid
+  assign crumbs_names = 'Home' | split: '|'
+  assign crumbs_urls = request.origin | split: '|'
+
+  case template.name
+    when 'collection'
+      unless collection.handle == 'all-freestanding-baths'
+        assign parent_name = 'All Freestanding Baths'
+        assign parent_url = request.origin | append: '/collections/all-freestanding-baths'
+        assign is_accessory = false
+        assign accessory_handles = 'freestanding-bath-taps,wall-mounted-bath-taps,bath-wastes-fillers,bath-feet-legs,bath-care-cleaning' | split: ','
+        if accessory_handles contains collection.handle
+          assign is_accessory = true
+        endif
+        unless is_accessory
+          assign crumbs_names = crumbs_names | concat: parent_name
+          assign crumbs_urls = crumbs_urls | concat: parent_url
+        endunless
+      endunless
+      assign col_name_arr = collection.title | split: '|'
+      assign col_url = request.origin | append: collection.url
+      assign col_url_arr = col_url | split: '|'
+      assign crumbs_names = crumbs_names | concat: col_name_arr
+      assign crumbs_urls = crumbs_urls | concat: col_url_arr
+    when 'product'
+      if collection
+        assign col_name_arr = collection.title | split: '|'
+        assign col_url = request.origin | append: collection.url
+        assign col_url_arr = col_url | split: '|'
+        assign crumbs_names = crumbs_names | concat: col_name_arr
+        assign crumbs_urls = crumbs_urls | concat: col_url_arr
+      endif
+      assign p_name_arr = product.title | split: '|'
+      assign p_url = request.origin | append: product.url
+      assign p_url_arr = p_url | split: '|'
+      assign crumbs_names = crumbs_names | concat: p_name_arr
+      assign crumbs_urls = crumbs_urls | concat: p_url_arr
+    when 'page'
+      assign pg_name_arr = page.title | split: '|'
+      assign pg_url = request.origin | append: page.url
+      assign pg_url_arr = pg_url | split: '|'
+      assign crumbs_names = crumbs_names | concat: pg_name_arr
+      assign crumbs_urls = crumbs_urls | concat: pg_url_arr
+    when 'article'
+      if blog
+        assign b_name_arr = blog.title | split: '|'
+        assign b_url = request.origin | append: blog.url
+        assign b_url_arr = b_url | split: '|'
+        assign crumbs_names = crumbs_names | concat: b_name_arr
+        assign crumbs_urls = crumbs_urls | concat: b_url_arr
+      endif
+      assign a_name_arr = article.title | split: '|'
+      assign a_url = request.origin | append: article.url
+      assign a_url_arr = a_url | split: '|'
+      assign crumbs_names = crumbs_names | concat: a_name_arr
+      assign crumbs_urls = crumbs_urls | concat: a_url_arr
+  endcase
+-%}
+
+{%- if crumbs_names.size > 1 -%}
+  <nav class="fbc-breadcrumbs page-width" aria-label="Breadcrumbs">
+    <ol class="fbc-breadcrumbs__list" role="list">
+      {%- for name in crumbs_names -%}
+        <li class="fbc-breadcrumbs__item">
+          {%- if forloop.last -%}
+            <span aria-current="page">{{ name }}</span>
+          {%- else -%}
+            <a href="{{ crumbs_urls[forloop.index0] }}">{{ name }}</a>
+            <span class="fbc-breadcrumbs__sep" aria-hidden="true">/</span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ol>
+  </nav>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {%- for name in crumbs_names -%}
+          {
+            "@type": "ListItem",
+            "position": {{ forloop.index }},
+            "name": {{ name | json }},
+            "item": {{ crumbs_urls[forloop.index0] | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}

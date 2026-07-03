@@ -1,0 +1,62 @@
+{% comment %}
+  Specifications table — brief §7. Auto-built from ALL custom metafields
+  plus weight/dimensions where present. Renders nothing if no specs exist.
+{% endcomment %}
+
+{%- liquid
+  assign mf = product.metafields.custom
+  assign has_specs = false
+  if mf.bath_type.value or mf.material.value or mf.size_mm.value or mf.style.value or mf.colour.value or mf.ended.value or mf.brand.value or mf.guarantee.value
+    assign has_specs = true
+  endif
+-%}
+
+{%- if has_specs -%}
+  <table class="fbc-table">
+    <caption class="fbc-visually-hidden">Specifications for {{ product.title | escape }}</caption>
+    <tbody>
+      {%- if mf.brand.value != blank -%}
+        <tr><th scope="row">Brand</th><td>{{ mf.brand.value }}</td></tr>
+      {%- endif -%}
+      {%- if mf.bath_type.value -%}
+        <tr><th scope="row">Bath type</th><td>
+          {%- for t in mf.bath_type.value -%}
+            {{- t | replace: '-', ' ' | capitalize -}}{%- unless forloop.last -%}, {% endunless -%}
+          {%- endfor -%}
+        </td></tr>
+      {%- endif -%}
+      {%- if mf.material.value != blank -%}
+        <tr><th scope="row">Material</th><td>{{ mf.material.value | replace: '-', ' ' | capitalize }}</td></tr>
+      {%- endif -%}
+      {%- if mf.size_mm.value -%}
+        <tr><th scope="row">Length</th><td>{{ mf.size_mm.value }}mm</td></tr>
+      {%- endif -%}
+      {%- if mf.ended.value != blank -%}
+        <tr><th scope="row">Ended</th><td>{{ mf.ended.value | capitalize }} ended</td></tr>
+      {%- endif -%}
+      {%- if mf.style.value != blank -%}
+        <tr><th scope="row">Style</th><td>{{ mf.style.value | capitalize }}</td></tr>
+      {%- endif -%}
+      {%- if mf.colour.value != blank -%}
+        <tr><th scope="row">Colour</th><td>{{ mf.colour.value | capitalize }}
+          {%- if mf.colour.value == 'painted' %} — any RAL colour available{% endif -%}
+        </td></tr>
+      {%- endif -%}
+      <tr><th scope="row">Feet included</th><td>{% if mf.feet_included.value == true %}Yes{% else %}No — see <a href="/collections/bath-feet-legs">bath feet &amp; legs</a>{% endif %}</td></tr>
+      {%- if mf.guarantee.value != blank -%}
+        <tr><th scope="row">Guarantee</th><td>{{ mf.guarantee.value }}</td></tr>
+      {%- endif -%}
+      {%- assign v = product.selected_or_first_available_variant -%}
+      {%- if v.weight > 0 -%}
+        <tr><th scope="row">Weight</th><td>{{ v.weight | weight_with_unit }}</td></tr>
+      {%- endif -%}
+      {%- if mf.nextday_eligible.value == true -%}
+        <tr><th scope="row">Delivery</th><td>Free, 3–5 working days — next-working-day upgrade available</td></tr>
+      {%- else -%}
+        <tr><th scope="row">Delivery</th><td>Free, 3–5 working days</td></tr>
+      {%- endif -%}
+    </tbody>
+  </table>
+{%- else -%}
+  <p>Full specifications for this product are on their way — <a href="/pages/contact">ask us</a> and we'll send them over the same day.</p>
+{%- endif -%}

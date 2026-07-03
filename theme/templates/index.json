@@ -1,0 +1,114 @@
+{
+  "sections": {
+    "hero": {
+      "type": "fbc-hero",
+      "settings": {
+        "height": "large",
+        "ken_burns": true,
+        "eyebrow": "Freestanding Bath Co",
+        "heading": "The Home of Statement Baths",
+        "subheading": "Freestanding baths chosen for character, comfort and craft — free UK delivery in 3–5 working days on every one.",
+        "cta_primary_label": "Shop All Baths",
+        "cta_primary_url": "shopify://collections/all-freestanding-baths",
+        "cta_secondary_label": "Find Your Style",
+        "cta_secondary_url": "shopify://pages/buying-guide"
+      }
+    },
+    "trust": {
+      "type": "fbc-trust-row",
+      "blocks": {
+        "b1": { "type": "item", "settings": { "icon": "truck", "heading": "Free Delivery", "text": "3–5 working days, every order" } },
+        "b2": { "type": "item", "settings": { "icon": "bolt", "heading": "Next-Day Upgrade", "text": "On eligible baths" } },
+        "b3": { "type": "item", "settings": { "icon": "card", "heading": "Finance Available", "text": "Spread the cost at checkout" } },
+        "b4": { "type": "item", "settings": { "icon": "chat", "heading": "Expert Advice", "text": "Bath specialists, not call centres" } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    },
+    "collection_tiles": {
+      "type": "fbc-collection-tiles",
+      "blocks": {
+        "t1": { "type": "tile", "settings": { "collection": "roll-top-baths" } },
+        "t2": { "type": "tile", "settings": { "collection": "slipper-baths" } },
+        "t3": { "type": "tile", "settings": { "collection": "boat-bateau-baths" } },
+        "t4": { "type": "tile", "settings": { "collection": "back-to-wall-freestanding-baths" } },
+        "t5": { "type": "tile", "settings": { "collection": "freestanding-shower-baths" } },
+        "t6": { "type": "tile", "settings": { "collection": "stone-stone-resin-baths" } },
+        "t7": { "type": "tile", "settings": { "collection": "copper-baths" } },
+        "t8": { "type": "tile", "settings": { "collection": "freestanding-bath-taps" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"],
+      "settings": {
+        "eyebrow": "Shop by shape, material and style",
+        "heading": "Explore Our Collections"
+      }
+    },
+    "editorial": {
+      "type": "fbc-editorial-split",
+      "settings": {
+        "reverse": false,
+        "eyebrow": "Our philosophy",
+        "heading": "One Room. One Hero.",
+        "text": "<p>Most bathrooms are designed around fittings. Ours are designed around a feeling — the moment you walk in and the bath simply owns the room. We choose every freestanding bath for its character, its comfort and its craft, so you can build the whole space around one beautiful centrepiece.</p>",
+        "cta_label": "Our Story",
+        "cta_url": "shopify://pages/about-us"
+      }
+    },
+    "featured": {
+      "type": "fbc-featured-products",
+      "settings": {
+        "eyebrow": "Hand-picked by our specialists",
+        "heading": "Signature Baths",
+        "collection": "all-freestanding-baths",
+        "limit": 8,
+        "link_label": "View all baths"
+      }
+    },
+    "sale": {
+      "type": "fbc-sale-band",
+      "settings": {
+        "eyebrow": "While they last",
+        "heading": "The Statement Bath Sale",
+        "text": "End-of-line designs — brand new, fully guaranteed, and still delivered free.",
+        "cta_label": "Shop the Sale",
+        "cta_url": "shopify://collections/sale-clearance"
+      }
+    },
+    "advice": {
+      "type": "fbc-advice-teaser",
+      "blocks": {
+        "a1": { "type": "custom", "settings": { "kicker": "Buying guide", "heading": "How to choose a freestanding bath", "text": "Sizes, materials, styles and the practical bits — everything you need to pick the right bath first time.", "link": "shopify://pages/buying-guide" } },
+        "a2": { "type": "article" },
+        "a3": { "type": "article" }
+      },
+      "block_order": ["a1", "a2", "a3"],
+      "settings": { "eyebrow": "Advice & guides", "heading": "Choose With Confidence" }
+    },
+    "social": {
+      "type": "fbc-social-strip",
+      "blocks": {
+        "s1": { "type": "image" },
+        "s2": { "type": "image" },
+        "s3": { "type": "image" },
+        "s4": { "type": "image" },
+        "s5": { "type": "image" }
+      },
+      "block_order": ["s1", "s2", "s3", "s4", "s5"],
+      "settings": { "heading": "At Home With Our Baths", "hashtag": "#MyStatementBath" }
+    },
+    "newsletter": {
+      "type": "fbc-newsletter",
+      "settings": { "heading": "Good Taste, Delivered." }
+    }
+  },
+  "order": [
+    "hero",
+    "trust",
+    "collection_tiles",
+    "editorial",
+    "featured",
+    "sale",
+    "advice",
+    "social",
+    "newsletter"
+  ]
+}

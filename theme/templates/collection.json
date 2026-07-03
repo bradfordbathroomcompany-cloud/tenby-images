@@ -1,0 +1,10 @@
+{
+  "sections": {
+    "main": {
+      "type": "fbc-main-collection",
+      "blocks": {},
+      "block_order": []
+    }
+  },
+  "order": ["main"]
+}

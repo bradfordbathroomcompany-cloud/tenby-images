@@ -1,0 +1,21 @@
+{% comment %}
+  Price block for the product buy column. Accepts product + variant.
+  Updated live by fbc-product.js on variant change (matched by data attrs).
+{% endcomment %}
+{%- liquid
+  assign v = variant | default: product.selected_or_first_available_variant
+  assign on_sale = false
+  if v.compare_at_price > v.price
+    assign on_sale = true
+    assign saving = v.compare_at_price | minus: v.price
+  endif
+-%}
+<div class="fbc-price-line">
+  {%- if on_sale -%}
+    <span class="fbc-price--compare" data-compare-price>{{ v.compare_at_price | money }}</span>
+    <span class="fbc-price fbc-price--sale" data-current-price>{{ v.price | money }}</span>
+    <span class="fbc-price-save" data-save-price>Save {{ saving | money_without_trailing_zeros }}</span>
+  {%- else -%}
+    <span class="fbc-price" data-current-price>{{ v.price | money }}</span>
+  {%- endif -%}
+</div>

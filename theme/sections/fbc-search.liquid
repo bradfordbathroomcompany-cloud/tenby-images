@@ -1,0 +1,68 @@
+{% comment %} FBC search results — brief §9 {% endcomment %}
+{{ 'fbc-pages.css' | asset_url | stylesheet_tag }}
+{{ 'fbc-collection.css' | asset_url | stylesheet_tag }}
+
+<div class="fbc-search-results-page page-width">
+  <header class="fbc-page-head fbc-page-head--left">
+    <h1>Search</h1>
+  </header>
+
+  <form action="{{ routes.search_url }}" method="get" role="search" class="fbc-404__search" style="margin:0 0 var(--space-4);max-width:52rem">
+    <label class="fbc-visually-hidden" for="SearchPageInput">Search</label>
+    <input type="search" id="SearchPageInput" name="q" value="{{ search.terms | escape }}" placeholder="Search baths, taps, guides…">
+    <input type="hidden" name="options[prefix]" value="last">
+    <button type="submit" class="button button--primary">Search</button>
+  </form>
+
+  {%- if search.performed -%}
+    <p class="fbc-search-summary">
+      {%- if search.results_count == 0 -%}
+        No results for “{{ search.terms }}”. Try a shape, size or material.
+      {%- else -%}
+        {{ search.results_count }} {{ search.results_count | pluralize: 'result', 'results' }} for “{{ search.terms }}”.
+      {%- endif -%}
+    </p>
+
+    {%- paginate search.results by 24 -%}
+      {%- if search.results.size > 0 -%}
+        <ul class="fbc-product-grid" role="list">
+          {%- for item in search.results -%}
+            <li>
+              {%- if item.object_type == 'product' -%}
+                {% render 'fbc-card-product', card_product: item %}
+              {%- else -%}
+                <a class="fbc-article-card" href="{{ item.url }}">
+                  {%- if item.image or item.featured_image -%}
+                    <span class="fbc-article-card__media">{{ item.image | default: item.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: item.title | escape }}</span>
+                  {%- endif -%}
+                  <span class="fbc-article-card__meta">{{ item.object_type | capitalize }}</span>
+                  <span class="fbc-article-card__title">{{ item.title }}</span>
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="fbc-pagination" aria-label="Pagination">
+            {%- if paginate.previous -%}<a class="fbc-pagination__link" href="{{ paginate.previous.url }}" rel="prev">← Previous</a>{%- endif -%}
+            <ul class="fbc-pagination__list" role="list">
+              {%- for part in paginate.parts -%}
+                <li>
+                  {%- if part.is_link -%}<a class="fbc-pagination__num" href="{{ part.url }}">{{ part.title }}</a>
+                  {%- elsif part.title == paginate.current_page -%}<span class="fbc-pagination__num is-current" aria-current="page">{{ part.title }}</span>
+                  {%- else -%}<span class="fbc-pagination__num fbc-pagination__num--gap">{{ part.title }}</span>{%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+            {%- if paginate.next -%}<a class="fbc-pagination__link" href="{{ paginate.next.url }}" rel="next">Next →</a>{%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{ "name": "Search", "tag": "section", "settings": [] }
+{% endschema %}

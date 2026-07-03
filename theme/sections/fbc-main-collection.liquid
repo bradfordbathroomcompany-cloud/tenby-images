@@ -1,0 +1,211 @@
+{% comment %} FBC collection template — brief §5 {% endcomment %}
+{{ 'fbc-collection.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'fbc-facets.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign desc = collection.description
+  assign desc_parts = desc | split: '<h2'
+  assign intro_html = desc_parts[0]
+  assign faq_html = ''
+  if desc_parts.size > 1
+    assign faq_html = desc | remove_first: intro_html
+  endif
+-%}
+
+{% render 'fbc-breadcrumbs' %}
+
+<div class="fbc-collection-hero page-width">
+  <h1 class="fbc-collection-hero__title">{{ collection.title }}</h1>
+  {%- if intro_html != blank -%}
+    <div class="fbc-collection-hero__intro rte">{{ intro_html }}</div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} Sub-collection chip row (section blocks) {%- endcomment -%}
+{%- if section.blocks.size > 0 -%}
+  <div class="page-width">
+    <ul class="fbc-chips fbc-collection-chips" role="list">
+      {%- for block in section.blocks -%}
+        {%- assign chip_col = block.settings.collection -%}
+        {%- if chip_col != blank -%}
+          <li {{ block.shopify_attributes }}>
+            <a class="fbc-chip{% if chip_col.id == collection.id %} fbc-chip--active{% endif %}" href="{{ chip_col.url }}">
+              {{ block.settings.label | default: chip_col.title }}
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+<div class="page-width fbc-collection">
+  <div class="fbc-collection__bar">
+    <button type="button" class="button button--secondary fbc-collection__filter-toggle" data-facet-open aria-expanded="false" aria-controls="FbcFacets">
+      {% render 'fbc-icon', icon: 'ruler', class: 'fbc-icon' %}
+      Filter
+    </button>
+    <p class="fbc-collection__count">{{ collection.products_count }} {{ collection.products_count | pluralize: 'bath', 'baths' }}</p>
+    <div class="fbc-collection__sort">
+      <label for="FbcSort" class="fbc-visually-hidden">Sort by</label>
+      {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+      <select id="FbcSort" name="sort_by" data-sort>
+        {%- for option in collection.sort_options -%}
+          <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name }}</option>
+        {%- endfor -%}
+      </select>
+      <svg class="fbc-header__caret" viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <div class="fbc-collection__layout">
+    <aside class="fbc-collection__sidebar" id="FbcFacets">
+      {% render 'fbc-facets' %}
+    </aside>
+
+    <div class="fbc-collection__main">
+      {%- comment -%} Active filter pills {%- endcomment -%}
+      {%- assign has_active = false -%}
+      {%- for filter in collection.filters -%}
+        {%- if filter.active_values.size > 0 -%}{%- assign has_active = true -%}{%- endif -%}
+        {%- if filter.type == 'price_range' and filter.min_value.value != null or filter.max_value.value != null -%}{%- assign has_active = true -%}{%- endif -%}
+      {%- endfor -%}
+      {%- if has_active -%}
+        <ul class="fbc-active-pills" role="list">
+          {%- for filter in collection.filters -%}
+            {%- for value in filter.active_values -%}
+              <li>
+                <a class="fbc-active-pill" href="{{ value.url_to_remove }}">
+                  {{ filter.label }}: {{ value.label }}
+                  <span aria-hidden="true">×</span>
+                  <span class="fbc-visually-hidden">Remove filter</span>
+                </a>
+              </li>
+            {%- endfor -%}
+            {%- if filter.type == 'price_range' -%}
+              {%- if filter.min_value.value != null or filter.max_value.value != null -%}
+                <li>
+                  <a class="fbc-active-pill" href="{{ filter.url_to_remove }}">
+                    {{ filter.min_value.value | default: 0 | money }}–{{ filter.max_value.value | default: filter.range_max | money }}
+                    <span aria-hidden="true">×</span>
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+          <li><a class="fbc-active-pill fbc-active-pill--clear" href="{{ collection.url }}">Clear all</a></li>
+        </ul>
+      {%- endif -%}
+
+      {%- paginate collection.products by 24 -%}
+        {%- if collection.products.size > 0 -%}
+          <ul class="fbc-product-grid" role="list" id="FbcProductGrid">
+            {%- for product in collection.products -%}
+              <li>
+                {% render 'fbc-card-product', card_product: product, lazy_load: forloop.index0 > 3 %}
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="fbc-pagination" aria-label="Pagination">
+              {%- if paginate.previous -%}
+                <a class="fbc-pagination__link" href="{{ paginate.previous.url }}" rel="prev">← Previous</a>
+              {%- endif -%}
+              <ul class="fbc-pagination__list" role="list">
+                {%- for part in paginate.parts -%}
+                  <li>
+                    {%- if part.is_link -%}
+                      <a class="fbc-pagination__num" href="{{ part.url }}">{{ part.title }}</a>
+                    {%- elsif part.title == paginate.current_page -%}
+                      <span class="fbc-pagination__num is-current" aria-current="page">{{ part.title }}</span>
+                    {%- else -%}
+                      <span class="fbc-pagination__num fbc-pagination__num--gap">{{ part.title }}</span>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+              {%- if paginate.next -%}
+                <a class="fbc-pagination__link" href="{{ paginate.next.url }}" rel="next">Next →</a>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- else -%}
+          <div class="fbc-collection__empty">
+            <p>No baths match those filters just yet.</p>
+            <a class="button button--secondary" href="{{ collection.url }}">Clear filters</a>
+          </div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  </div>
+</div>
+
+{%- comment -%} FAQ / SEO copy renders BELOW the grid {%- endcomment -%}
+{%- if faq_html != blank -%}
+  <section class="fbc-collection-faq fbc-section">
+    <div class="page-width fbc-prose">
+      <div class="rte">{{ faq_html | prepend: '<h2' }}</div>
+    </div>
+  </section>
+{%- endif -%}
+
+{%- comment -%} CollectionPage JSON-LD {%- endcomment -%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": {{ collection.title | json }},
+    "description": {{ collection.description | strip_html | truncate: 300 | json }},
+    "url": {{ request.origin | append: collection.url | json }}
+  }
+</script>
+
+{%- comment -%} FAQPage JSON-LD parsed from <h3> questions in the FAQ copy {%- endcomment -%}
+{%- if faq_html contains '<h3' -%}
+  {%- assign q_blocks = faq_html | split: '<h3' -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- assign emitted = 0 -%}
+        {%- for block in q_blocks offset: 1 -%}
+          {%- assign after_open = block | split: '>' -%}
+          {%- assign q_and_rest = after_open | slice: 1, 20 | join: '>' -%}
+          {%- assign q_text = q_and_rest | split: '</h3>' | first | strip_html | strip -%}
+          {%- assign a_text = q_and_rest | split: '</h3>' | last | split: '<h3' | first | strip_html | strip | truncate: 600 -%}
+          {%- if q_text != blank and a_text != blank -%}
+            {%- if emitted > 0 -%},{%- endif -%}
+            {
+              "@type": "Question",
+              "name": {{ q_text | json }},
+              "acceptedAnswer": { "@type": "Answer", "text": {{ a_text | json }} }
+            }
+            {%- assign emitted = emitted | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "tag": "section",
+  "settings": [
+    { "type": "paragraph", "content": "Add sub-collection chips (e.g. link the 8 bath types on the All Baths page)." }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Sub-collection chip",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "label", "label": "Custom label" }
+      ]
+    }
+  ]
+}
+{% endschema %}

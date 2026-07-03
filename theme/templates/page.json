@@ -1,0 +1,4 @@
+{
+  "sections": { "main": { "type": "fbc-main-page" } },
+  "order": ["main"]
+}

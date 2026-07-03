@@ -1,0 +1,381 @@
+/* ============================================================
+   Freestanding Bath Co — global design system
+   Loaded after base.css in layout/theme.liquid.
+   "The Home of Statement Baths" — warm, tactile, boutique.
+   Tokens are set as CSS custom properties on :root; several are
+   overridable from theme settings (see snippets/fbc-tokens.liquid).
+   ============================================================ */
+
+:root {
+  /* Colour tokens */
+  --c-ink: #2B2622;
+  --c-cream: #FAF6EF;
+  --c-paper: #FFFFFF;
+  --c-brass: #A67C44;
+  --c-brass-dark: #8A6534;
+  --c-sage: #7D8471;
+  --c-error: #B3261E;
+  --c-success: #3D6B4F;
+
+  /* Derived tints */
+  --c-ink-70: rgb(43 38 34 / 0.7);
+  --c-ink-40: rgb(43 38 34 / 0.4);
+  --c-line: rgb(43 38 34 / 0.12);
+  --c-brass-tint: rgb(166 124 68 / 0.09);
+  --c-sage-tint: rgb(125 132 113 / 0.12);
+
+  /* Type */
+  --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --fs-h1: clamp(2.5rem, 1.8rem + 2.4vw, 4rem);        /* 40 -> 64 */
+  --fs-h2: clamp(1.875rem, 1.45rem + 1.5vw, 2.75rem);  /* 30 -> 44 */
+  --fs-h3: clamp(1.375rem, 1.25rem + 0.5vw, 1.75rem);  /* 22 -> 28 */
+  --fs-h4: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);
+  --fs-body: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);  /* 16 -> 18 */
+  --fs-small: 0.875rem;
+  --fs-micro: 0.8125rem;
+
+  --lh-body: 1.6;
+  --lh-heading: 1.15;
+
+  /* Space — 8px grid */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 2.5rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-section: clamp(3.5rem, 2.4rem + 4.5vw, 8rem); /* 56 -> 128 */
+
+  /* Surfaces */
+  --radius-card: 2px;
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.08);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
+  --dur-slow: 250ms;
+
+  /* Bridge into Dawn's variable system so remaining Dawn plumbing
+     (drawers, forms, focus rings) inherits the brand automatically. */
+  --color-foreground: 43, 38, 34;
+  --color-background: 250, 246, 239;
+  --color-button: 166, 124, 68;
+  --color-button-text: 250, 246, 239;
+  --color-secondary-button: 250, 246, 239;
+  --color-secondary-button-text: 43, 38, 34;
+  --color-link: 138, 101, 52;
+  --color-badge-foreground: 43, 38, 34;
+  --color-badge-background: 250, 246, 239;
+  --color-badge-border: 43, 38, 34;
+  --color-shadow: 43, 38, 34;
+
+  --font-body-family: var(--font-body);
+  --font-body-style: normal;
+  --font-body-weight: 400;
+  --font-body-weight-bold: 600;
+  --font-heading-family: var(--font-heading);
+  --font-heading-style: normal;
+  --font-heading-weight: 400;
+
+  --font-body-scale: 1;
+  --font-heading-scale: 1;
+
+  --page-width: 144rem;
+  --page-width-margin: 0rem;
+
+  --card-corner-radius: var(--radius-card);
+  --text-boxes-radius: var(--radius-card);
+  --buttons-radius: 2px;
+  --buttons-radius-outset: 2px;
+  --buttons-border-width: 1px;
+  --buttons-border-opacity: 1;
+  --buttons-shadow-opacity: 0;
+  --inputs-radius: 2px;
+  --inputs-border-width: 1px;
+  --inputs-radius-outset: 2px;
+  --inputs-border-opacity: 0.35;
+  --inputs-shadow-opacity: 0;
+  --variant-pills-radius: 2px;
+  --popup-corner-radius: 2px;
+  --drawer-corner-radius: 0;
+  --media-radius: var(--radius-card);
+  --media-border-opacity: 0;
+  --media-shadow-opacity: 0;
+  --card-shadow-opacity: 0;
+  --card-border-opacity: 0;
+  --badge-corner-radius: 2px;
+}
+
+/* ------------------------------------------------------------
+   Base
+   ------------------------------------------------------------ */
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--c-ink);
+  background-color: var(--c-cream);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5,
+.h0, .h1, .h2, .h3, .h4, .h5 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: var(--lh-heading);
+  color: var(--c-ink);
+  letter-spacing: 0;
+}
+
+h1, .h1 { font-size: var(--fs-h1); }
+h2, .h2 { font-size: var(--fs-h2); }
+h3, .h3 { font-size: var(--fs-h3); }
+h4, .h4 { font-size: var(--fs-h4); font-family: var(--font-body); font-weight: 600; }
+
+p { line-height: var(--lh-body); }
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a:hover { color: var(--c-brass-dark); }
+
+.rte a, .fbc-link {
+  color: var(--c-brass-dark);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+.rte a:hover, .fbc-link:hover { color: var(--c-ink); }
+
+::selection { background: rgb(166 124 68 / 0.25); }
+
+/* Visible focus — 4.5:1 against cream */
+:focus-visible,
+.focused {
+  outline: 2px solid var(--c-brass-dark) !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Buttons — squared, 2px radius, understated
+   ------------------------------------------------------------ */
+
+.button,
+.shopify-challenge__button,
+.customer button,
+button.shopify-payment-button__button--unbranded {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  min-height: 4.8rem;
+  padding: 0 2.8rem;
+  border-radius: 2px;
+  transition: background-color var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out);
+}
+
+.button--primary,
+.button:not(.button--secondary):not(.button--tertiary) {
+  background-color: var(--c-brass);
+  color: var(--c-cream);
+}
+.button--primary:hover,
+.button:not(.button--secondary):not(.button--tertiary):hover {
+  background-color: var(--c-brass-dark);
+  color: var(--c-cream);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--c-ink);
+  border: 1px solid var(--c-ink);
+  box-shadow: none;
+}
+.button--secondary:hover {
+  background: var(--c-ink);
+  color: var(--c-cream);
+}
+
+.button:after, .shopify-payment-button__button--unbranded:after,
+.button:hover:after { box-shadow: none; }
+
+/* ------------------------------------------------------------
+   Shared components
+   ------------------------------------------------------------ */
+
+/* Eyebrow / kicker line above section headings */
+.fbc-eyebrow {
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-brass-dark);
+  margin-bottom: var(--space-2);
+}
+
+/* Section heading block */
+.fbc-section-header {
+  max-width: 68rem;
+  margin: 0 auto var(--space-6);
+  text-align: center;
+}
+.fbc-section-header--left { text-align: left; margin-left: 0; }
+.fbc-section-header p {
+  color: var(--c-ink-70);
+  margin-top: var(--space-2);
+}
+
+/* Section vertical rhythm */
+.fbc-section { padding-top: var(--space-section); padding-bottom: var(--space-section); }
+.fbc-section--flush { padding-top: 0; padding-bottom: 0; }
+
+/* Badges */
+.fbc-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.6em 0.9em;
+  border-radius: 2px;
+  background: var(--c-paper);
+  color: var(--c-ink);
+  border: 1px solid var(--c-line);
+}
+.fbc-badge--new { background: var(--c-sage); border-color: var(--c-sage); color: #fff; }
+.fbc-badge--sale { background: var(--c-ink); border-color: var(--c-ink); color: var(--c-cream); }
+.fbc-badge--nextday { background: var(--c-brass); border-color: var(--c-brass); color: #fff; }
+
+/* Free delivery microline — appears wherever a price does */
+.fbc-delivery-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--fs-micro);
+  color: var(--c-success);
+  font-weight: 500;
+}
+.fbc-delivery-line .fbc-icon { width: 1.4rem; height: 1.4rem; flex: none; }
+
+/* Spec chips (product cards, product page) */
+.fbc-chips { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.fbc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  color: var(--c-ink);
+  background: var(--c-brass-tint);
+  border: 1px solid rgb(166 124 68 / 0.25);
+  border-radius: 2px;
+  padding: 0.55em 1em;
+  text-decoration: none;
+}
+a.fbc-chip:hover { background: var(--c-brass); color: #fff; border-color: var(--c-brass); }
+
+/* Prose measure for standard pages */
+.fbc-prose {
+  max-width: 72rem; /* 720px */
+  margin-left: auto;
+  margin-right: auto;
+}
+.fbc-prose h2 { margin-top: var(--space-6); margin-bottom: var(--space-2); }
+.fbc-prose h3 { margin-top: var(--space-4); margin-bottom: var(--space-1); }
+
+/* Cards */
+.fbc-surface {
+  background: var(--c-paper);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Price */
+.fbc-price { font-weight: 600; color: var(--c-ink); }
+.fbc-price--compare {
+  color: var(--c-ink-40);
+  text-decoration: line-through;
+  font-weight: 400;
+  margin-right: 0.6rem;
+}
+.fbc-price-save {
+  color: var(--c-error);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  margin-left: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Icon sizing helper */
+.fbc-icon { display: inline-block; width: 2rem; height: 2rem; stroke: currentColor; fill: none; }
+
+/* Utility */
+.fbc-visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Skip link stays Dawn's but restyle */
+.skip-to-content-link:focus {
+  background: var(--c-ink);
+  color: var(--c-cream);
+  border-radius: 2px;
+}
+
+/* Kill Dawn's decorative underline animation on links where it lingers */
+.underline-links-hover:hover a { text-decoration-thickness: 1px; }
+
+/* Inputs */
+.field__input, .select__select, .customer .field input, .customer select, .text-area {
+  background-color: var(--c-paper);
+  color: var(--c-ink);
+  font-family: var(--font-body);
+}
+.field__label, .customer .field label { color: var(--c-ink-70); }
+
+/* Dawn media placeholders → warm neutral */
+.placeholder-svg { background: var(--c-brass-tint); color: var(--c-ink-40); }
+
+/* Announcement + utility bars use ink on cream inverse */
+.fbc-inverse { background: var(--c-ink); color: var(--c-cream); }
+.fbc-inverse a { color: inherit; }
+
+/* Tables (specs) */
+.fbc-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+.fbc-table th, .fbc-table td {
+  text-align: left;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--c-line);
+  vertical-align: top;
+}
+.fbc-table th {
+  font-weight: 600;
+  color: var(--c-ink-70);
+  width: 38%;
+  font-family: var(--font-body);
+}
+.fbc-table tr:nth-child(odd) td, .fbc-table tr:nth-child(odd) th { background: rgb(255 255 255 / 0.55); }

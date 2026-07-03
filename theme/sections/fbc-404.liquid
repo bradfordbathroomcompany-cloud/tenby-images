@@ -1,0 +1,40 @@
+{% comment %} FBC 404 — brief §9 {% endcomment %}
+{{ 'fbc-pages.css' | asset_url | stylesheet_tag }}
+
+<div class="fbc-404 page-width">
+  <span class="fbc-eyebrow">Error 404</span>
+  <h1 class="fbc-404__title">This page has gone down the plughole.</h1>
+  <p class="fbc-404__text">The page you were after isn't here — but the baths certainly are. Try a search, or start with one of our collections.</p>
+
+  <form action="{{ routes.search_url }}" method="get" role="search" class="fbc-404__search">
+    <label class="fbc-visually-hidden" for="Search404">Search</label>
+    <input type="search" id="Search404" name="q" placeholder="Search baths, taps, guides…">
+    <button type="submit" class="button button--primary">Search</button>
+  </form>
+
+  <ul class="fbc-404__links" role="list">
+    {%- for block in section.blocks -%}
+      {%- if block.settings.collection != blank -%}
+        <li><a class="button button--secondary" href="{{ block.settings.collection.url }}">{{ block.settings.collection.title }}</a></li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "404",
+  "tag": "section",
+  "max_blocks": 5,
+  "blocks": [
+    { "type": "link", "name": "Collection link", "settings": [ { "type": "collection", "id": "collection", "label": "Collection" } ] }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "link", "settings": { "collection": "all-freestanding-baths" } },
+      { "type": "link", "settings": { "collection": "roll-top-baths" } },
+      { "type": "link", "settings": { "collection": "sale-clearance" } }
+    ]
+  }
+}
+{% endschema %}
