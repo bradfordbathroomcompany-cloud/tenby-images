@@ -171,10 +171,9 @@
       "mainEntity": [
         {%- assign emitted = 0 -%}
         {%- for block in q_blocks offset: 1 -%}
-          {%- assign after_open = block | split: '>' -%}
-          {%- assign q_and_rest = after_open | slice: 1, 20 | join: '>' -%}
-          {%- assign q_text = q_and_rest | split: '</h3>' | first | strip_html | strip -%}
-          {%- assign a_text = q_and_rest | split: '</h3>' | last | split: '<h3' | first | strip_html | strip | truncate: 600 -%}
+          {%- assign q_after = block | split: '>' -%}
+          {%- assign q_text = q_after[1] | split: '</h3' | first | strip_html | strip -%}
+          {%- assign a_text = block | split: '</h3>' | last | split: '<h3' | first | strip_html | strip | truncate: 600 -%}
           {%- if q_text != blank and a_text != blank -%}
             {%- if emitted > 0 -%},{%- endif -%}
             {
